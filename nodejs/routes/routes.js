@@ -1,17 +1,38 @@
-const { multer } = require("../middlewares");
+const fs = require("fs");
 const express = require("express");
+const path = require("path");
+
+const { multer } = require("../middlewares");
+const { parseText, parseXMLS } = require("../scripts");
+
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  console.log("Hello, world!");
-  res.send("Hello, world!");
-});
-
-router.post("/submit-form", multer.single("file"), (req, res) => {
+router.post("/submit-form", multer.single("file"), async (req, res) => {
   const formData = req.body;
+  const fileType = formData.type;
   const file = req.file;
-  console.log("got form");
-  res.send("Form submitted successfully!");
+  const fileExtension = path.extname(file.path);
+  const isXLSXFile = fileExtension === ".xlsx";
+  const isTextFile = fileExtension === ".txt";
+  const isJiraFile = fileType === "jira";
+
+  fs.readFile(file.path, "utf8", (err, data) => {
+    try {
+      if ((isJiraFile && isXLSXFile) || (!isJiraFile && isTextFile)) {
+        const parsedResponse = isJiraFile
+          ? parseXMLS(file.path)
+          : parseText(data);
+        res.send(parsedResponse);
+      } else {
+        throw new Error(
+          "Invalid file extension. Only .txt for custom and .xlsx for jira files are supported."
+        );
+      }
+    } catch (error) {
+      console.error("Error: ", error);
+      res.status(400).send(error.message);
+    }
+  });
 });
 
 module.exports = router;

@@ -1,18 +1,33 @@
-const XLSX = require("xlsx");
+const {
+  groupedDataByDate,
+  validateDataObject,
+  getHoursFromString,
+} = require("./helpers");
 
-const parseCustomData = (data) => {
+const getFormattedDate = (date) => {
+  const [month, day] = date.split(".");
+  const currentYear = new Date().getFullYear();
+
+  return new Date(`${currentYear}-${month}-${day}`)
+    .toLocaleDateString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+    })
+    .replace(/\//g, "-");
+};
+
+const parseText = (data) => {
   let currentDay = "";
 
   const lines = data.split("\n");
-  const entries = [];
+  const formattedData = [];
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (line.match(/^\d{2}\.\d{2}$/)) {
-      currentDay = line;
+      currentDay = getFormattedDate(line);
     } else if (line.match(/^\d+\./)) {
-      let hours;
-
       const parts = line.split(" ");
       const description = parts
         .slice(0, -1)
@@ -23,10 +38,12 @@ const parseCustomData = (data) => {
 
       const lastPart = parts[parts.length - 1].trim();
       const preLastPart = parts[parts.length - 2].trim();
-      const status =
+      const blb =
         lastPart.includes("nblb") || lastPart.includes("blb")
           ? lastPart
           : "nblb";
+
+      let hours;
 
       if (preLastPart.match(/^\d+(\.\d+)?h$/)) {
         hours = preLastPart;
@@ -35,24 +52,22 @@ const parseCustomData = (data) => {
         hours = lastPart;
       }
 
-      entries.push({
+      const formattedItem = {
         date: currentDay,
         description,
-        hours,
-        status,
-      });
+        hours: getHoursFromString(hours),
+        blb,
+        project: "",
+        task: "",
+      };
+
+      validateDataObject(formattedItem);
+
+      formattedData.push(formattedItem);
     }
   }
 
-  return entries;
+  return groupedDataByDate(formattedData);
 };
 
-const parseXMLS = () => {
-  const workbook = XLSX.readFile("worklogs.xlsx");
-  const sheetName = workbook.SheetNames[1];
-  const worksheet = workbook.Sheets[sheetName];
-
-  return XLSX.utils.sheet_to_json(worksheet);
-};
-
-module.exports = { parseCustomData, parseXMLS };
+module.exports = parseText;

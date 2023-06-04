@@ -1,1 +1,2 @@
-module.exports.parsers = require("./parsers");
+module.exports.parseText = require("./parseText");
+module.exports.parseXMLS = require("./parseXMLS");
