@@ -1,4 +1,5 @@
 const XLSX = require("xlsx");
+const { v4: uuidv4 } = require("uuid");
 const {
   groupedDataByDate,
   validateDataObject,
@@ -15,7 +16,7 @@ const getFormattedDate = (date) => {
   const year = dateObj.getFullYear();
   const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
   const day = ("0" + dateObj.getDate()).slice(-2);
-  return `${year}-${month}-${day}`;
+  return `${month}-${day}-${year}`;
 };
 
 const getFormatWorksheetData = (worksheetData) => {
@@ -27,6 +28,7 @@ const getFormatWorksheetData = (worksheetData) => {
     const hours = isHoursFormatted ? getHoursFromString(taskHours) : taskHours;
 
     const formattedData = {
+      id: uuidv4(),
       date: getFormattedDate(date),
       description,
       hours,
