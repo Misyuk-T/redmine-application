@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const {
   groupedDataByDate,
   validateDataObject,
@@ -53,6 +54,7 @@ const parseText = (data) => {
       }
 
       const formattedItem = {
+        id: uuidv4(),
         date: currentDay,
         description,
         hours: getHoursFromString(hours),
