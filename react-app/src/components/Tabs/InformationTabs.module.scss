@@ -1,0 +1,32 @@
+.informationTabs {
+
+  .tabsList {
+    position: relative;
+    border: none;
+    gap: 1px;
+
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      height: 1px;
+      background: #b7aeae;
+      bottom: -1px;
+      margin-left: calc((-100vw + 100%) / 2);
+      width: 100vw;
+    }
+  }
+    .tabItem {
+      border-color: gainsboro;
+      border-bottom: 2px solid;
+      border-bottom-color: transparent;
+
+      &[tabindex='0'] {
+        border-color: #b7aeae;
+        border-bottom: 2px solid;
+        border-bottom-color: #ecebeb;
+        z-index: 10;
+      }
+    }
+}

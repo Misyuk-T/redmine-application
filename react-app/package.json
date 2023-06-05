@@ -1,12 +1,15 @@
 {
   "name": "react-app",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
   "dependencies": {
     "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.7.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
+    "@fontsource/open-sans": "^5.0.2",
+    "@fontsource/raleway": "^5.0.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -17,7 +20,8 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.44.3",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.3.8"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,5 +46,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sass": "^1.62.1"
   }
 }
