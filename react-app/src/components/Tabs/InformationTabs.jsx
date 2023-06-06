@@ -41,7 +41,7 @@ const InformationTabs = () => {
 
           return (
             <Tab
-              key={date + index}
+              key={date}
               className={styles.tabItem}
               bgColor="blackAlpha.50"
               fontWeight={600}
@@ -56,7 +56,7 @@ const InformationTabs = () => {
         <TotalInformationTab workLogs={workLogsArray} />
 
         {workLogsArray.map(([date, logs]) => {
-          return <TabItem dayLogs={logs} />;
+          return <TabItem key={date} dayLogs={logs} />;
         })}
 
         <BoxOverlay bgColor="blackAlpha.50" />

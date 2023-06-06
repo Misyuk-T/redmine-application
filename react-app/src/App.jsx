@@ -17,7 +17,7 @@ function App() {
         alignItems="stretch"
         mt={30}
         centerContent
-        fontFamily="Raleway"
+        fontFamily="Open sans"
       >
         <Form />
         <InformationTabs />
