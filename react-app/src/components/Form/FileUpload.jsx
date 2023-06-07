@@ -44,13 +44,20 @@ const FileUpload = ({ register, accept, multiple, onReset }) => {
           pl={2}
           onClick={handleClearFile}
           rightIcon={<Icon color="tomato" as={DeleteIcon} />}
+          border="1px solid black"
         >
           <Text noOfLines={1} display="block" fontSize="sm">
             {fileName}
           </Text>
         </Button>
       ) : (
-        <Button leftIcon={<Icon as={AttachmentIcon} />}>Upload File</Button>
+        <Button
+          w={146}
+          border="1px solid black"
+          leftIcon={<Icon as={AttachmentIcon} />}
+        >
+          Upload File
+        </Button>
       )}
     </InputGroup>
   );

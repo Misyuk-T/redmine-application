@@ -26,7 +26,6 @@ const Form = () => {
     addWorkLogs,
     resetWorkLogs,
     addWorkLog,
-    editWorkLog,
     addWorkLogsError,
     resetWorkLogsError,
   } = useWorkLogsStore();
@@ -110,7 +109,7 @@ const Form = () => {
               <RadioGroup control={control} />
 
               <Text as={FormErrorMessage} fontSize="md" color="tomato">
-                {errors.type && errors?.type.message}
+                {errors?.type && errors.type.message}
               </Text>
             </FormControl>
           </Flex>

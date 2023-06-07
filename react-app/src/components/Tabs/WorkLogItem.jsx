@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { DayPicker } from "react-day-picker";
 import {
@@ -9,7 +9,6 @@ import {
   CardHeader,
   EditableTextarea,
   Flex,
-  Heading,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -19,45 +18,67 @@ import {
   Text,
   Portal,
   FormLabel,
-  EditableInput,
   EditablePreview,
   Editable,
   useDisclosure,
+  IconButton,
+  Icon,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  NumberInput,
+  NumberInputField,
 } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
 
-import "react-day-picker/dist/style.css";
+import useWorkLogsStore from "../../store/store";
 import {
   getFormattedStringDate,
   getCorrectGMTDateObject,
 } from "../../helpers/getFormattedDate";
 
+const handleTextValidate = (value) => {
+  if (value.length < 1) {
+    return "Description  can`t be empty";
+  }
+
+  return true;
+};
+
+const handleNumbersValidate = (value) => {
+  if (isNaN(value) || value > 8 || value <= 0) {
+    return "Uncorrected hours field";
+  }
+
+  return true;
+};
+
 const WorkLogItem = ({ data }) => {
+  const defaultValues = {
+    description: data.description,
+    date: getCorrectGMTDateObject(data.date),
+    hours: data.hours,
+    blb: data.blb,
+  };
+
+  const { workLogs, updateWorkLog, deleteWorkLog } = useWorkLogsStore();
   const {
     handleSubmit,
     control,
     reset,
     setValue,
-    register,
     watch,
-    formState: { isValid },
+    register,
+    formState: { errors, isValid },
   } = useForm({
-    defaultValues: {
-      description: data.description,
-      date: getCorrectGMTDateObject(data.date),
-      hours: data.hours,
-      blb: data.blb,
-    },
+    defaultValues,
   });
   const [isEdited, setIsEdited] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const originDate = useRef(data.date);
 
   const handleCancel = () => {
-    reset({
-      description: data.description,
-      date: getCorrectGMTDateObject(data.date),
-      hours: data.hours,
-      blb: data.blb,
-    });
+    reset(defaultValues);
     setIsEdited(false);
   };
 
@@ -72,40 +93,66 @@ const WorkLogItem = ({ data }) => {
       blb: blb || data.blb,
     };
 
-    console.log(updatedData);
+    updateWorkLog(originDate.current, data.id, updatedData);
     setIsEdited(false);
+  };
+
+  const handleDelete = () => {
+    deleteWorkLog(originDate.current, data.id);
   };
 
   return (
     <Card
       borderWidth="1px"
       borderRadius="lg"
-      overflow="hidden"
+      position="relative"
       p={4}
       mb={4}
       boxShadow="md"
       bg="white"
+      pr={6}
+      border="2px solid transparent"
+      borderColor={Object.entries(errors).length && "tomato"}
     >
-      <CardHeader p={0}>
-        <Heading size="sm" my={2}>
-          <Flex alignItems="center" position="relative">
-            <Editable color="blue.600" defaultValue={data.description}>
-              <EditablePreview minW={20} minH={6} cursor="pointer" />
-              <EditableTextarea
-                resize="vertical"
-                h="100%"
-                position="absolute"
-                left={0}
-                bg="white"
-                zIndex={10}
-                fontFamily="Open sans"
-                fontSize={15}
-                {...register("description")}
-                onChange={() => setIsEdited(true)}
-              />
-            </Editable>
-          </Flex>
-        </Heading>
+      <CardHeader position="relative" p={0}>
+        {isEdited && (
+          <IconButton
+            colorScheme="red"
+            position="absolute"
+            size="xs"
+            aria-label="delete"
+            right={-5}
+            top={-3}
+            onClick={handleDelete}
+            icon={<Icon as={DeleteIcon} />}
+          />
+        )}
+
+        <Flex alignItems="flex-start" position="relative" minH="60px" mr={2}>
+          <Editable
+            color="blue.600"
+            defaultValue={data.description}
+            value={watch("description")}
+            w="100%"
+          >
+            <EditablePreview fontWeight={600} w="100%" cursor="pointer" />
+            <EditableTextarea
+              w="100%"
+              fontWeight={600}
+              fontFamily="Open sans"
+              flexGrow={1}
+              flexShrink={0}
+              fontSize={15}
+              register={register("description", {
+                validate: handleTextValidate,
+              })}
+              onChange={(value) => {
+                setValue("description", value.target.value);
+                setIsEdited(true);
+              }}
+            />
+          </Editable>
+        </Flex>
       </CardHeader>
 
       <CardBody as={Stack} gap={0} justifyContent="flex-end" p={0}>
@@ -137,6 +184,7 @@ const WorkLogItem = ({ data }) => {
                           selected={field.value}
                           showOutsideDays
                           mode="single"
+                          defaultMonth={field.value}
                           onDayClick={(date) => {
                             setValue("date", date);
                             onClose();
@@ -151,27 +199,45 @@ const WorkLogItem = ({ data }) => {
             </Portal>
           </Popover>
 
-          <Flex alignItems="center" position="relative" w="50%">
+          <Flex w="50%" alignItems="center">
             <Text m={0} mr={1}>
               <strong>Hours:</strong>
             </Text>
-            <Editable defaultValue={data.hours}>
-              <EditablePreview minW={20} minH={6} cursor="pointer" />
-              <EditableInput
-                type="number"
-                position="absolute"
-                h="20px"
-                w="fit-content"
-                left="53px"
-                bg="white"
-                step={0.25}
-                min={0.25}
-                max={8}
-                fontSize="16px"
-                {...register("hours")}
-                onChange={() => setIsEdited(true)}
+            <NumberInput
+              defaultValue={data.hours}
+              value={watch("hours")}
+              w="80px"
+              min={0.25}
+              max={8}
+              step={0.25}
+              keepWithinRange
+              allowMouseWheel
+              fontSize="16px"
+              onChange={(value) => {
+                setValue("hours", +value);
+                setIsEdited(true);
+              }}
+            >
+              <NumberInputField
+                register={register("hours", {
+                  validate: handleNumbersValidate,
+                })}
+                cursor="pointer"
+                border="none"
+                pl="5px"
+                _focus={{
+                  opacity: "1",
+                  "& ~ div": {
+                    opacity: 1,
+                  },
+                }}
               />
-            </Editable>
+
+              <NumberInputStepper opacity="0" transition="opacity 0.2s">
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
           </Flex>
         </Flex>
 
@@ -196,7 +262,13 @@ const WorkLogItem = ({ data }) => {
               const isChecked = field.value === "blb";
               return (
                 <Flex alignItems="center">
-                  <FormLabel htmlFor="email-alerts" mb="0" w="100px" m={0}>
+                  <FormLabel
+                    htmlFor="email-alerts"
+                    mb="0"
+                    w="100px"
+                    m={0}
+                    fontWeight={400}
+                  >
                     <Text as="strong" display="inline-block" mr="2px">
                       Status:
                     </Text>{" "}
@@ -235,6 +307,19 @@ const WorkLogItem = ({ data }) => {
           )}
         </Flex>
       </CardBody>
+
+      <Text
+        fontSize="sm"
+        m={0}
+        fontWeight={400}
+        color="tomato"
+        position="absolute"
+        top="100%"
+      >
+        {errors?.description && errors?.description.message}
+        <br />
+        {errors?.hours && errors?.hours.message}
+      </Text>
     </Card>
   );
 };

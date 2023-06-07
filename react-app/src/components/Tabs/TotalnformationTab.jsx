@@ -5,12 +5,10 @@ const TotalInformationTab = ({ workLogs }) => {
   const columnNumber = workLogs.length + 1;
   const totalPeriodHours = getTotalHours(workLogs);
 
-  console.log(workLogs);
-
   return (
     <TabPanel px={0}>
       <SimpleGrid columns={columnNumber}>
-        <Stack justifyContent="center">
+        <Stack justifyContent="center" gap={1}>
           <Heading my={4} size="sm">
             nblb:
           </Heading>
@@ -31,17 +29,29 @@ const TotalInformationTab = ({ workLogs }) => {
           const isLastItem = index === workLogs.length - 1;
 
           return (
-            <Stack justifyContent="center" key={index}>
-              <Text textAlign="center" fontWeight={500}>
+            <Stack justifyContent="center" key={index} gap={1}>
+              <Text lineHeight={1.2} my={4} textAlign="center" fontWeight={500}>
                 {nblbHours}
               </Text>
-              <Text textAlign="center" fontWeight={500}>
+              <Text lineHeight={1.2} my={4} textAlign="center" fontWeight={500}>
                 {blbHours}
               </Text>
-              <Text color={totalTextColor} textAlign="center" fontWeight={600}>
+              <Text
+                lineHeight={1.2}
+                my={4}
+                color={totalTextColor}
+                textAlign="center"
+                fontWeight={600}
+              >
                 {totalHours}
               </Text>
-              <Text textAlign="center" fontWeight={800} fontSize="lg">
+              <Text
+                lineHeight={1.2}
+                my={4}
+                textAlign="center"
+                fontWeight={800}
+                fontSize="lg"
+              >
                 {isLastItem ? totalPeriodHours : "ㅤ"}
               </Text>
               )

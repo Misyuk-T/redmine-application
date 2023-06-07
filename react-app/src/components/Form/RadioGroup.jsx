@@ -18,20 +18,10 @@ const RadioGroup = ({ control }) => {
           ref={ref}
           value={value}
         >
-          <Radio
-            name="type"
-            value="jira"
-            border="1px solid"
-            borderColor="gray.400"
-          >
+          <Radio name="type" value="jira">
             Jira export
           </Radio>
-          <Radio
-            name="type"
-            value="custom"
-            border="1px solid"
-            borderColor="gray.400"
-          >
+          <Radio name="type" value="custom">
             Custom txt
           </Radio>
         </ChakraRadioGroup>

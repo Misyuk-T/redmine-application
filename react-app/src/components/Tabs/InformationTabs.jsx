@@ -20,12 +20,15 @@ const InformationTabs = () => {
 
   const workLogsArray = workLogs ? Object.entries(workLogs) : [];
 
+  console.log(workLogs, "workLogs");
+
   return (
     <Tabs
       className={styles.informationTabs}
       variant="enclosed"
       isFitted
       mt={35}
+      h="100%"
     >
       <TabList className={styles.tabsList}>
         <Tab
@@ -52,7 +55,7 @@ const InformationTabs = () => {
         })}
       </TabList>
 
-      <TabPanels position="relative">
+      <TabPanels h="calc(100% - 45px)" position="relative">
         <TotalInformationTab workLogs={workLogsArray} />
 
         {workLogsArray.map(([date, logs]) => {
