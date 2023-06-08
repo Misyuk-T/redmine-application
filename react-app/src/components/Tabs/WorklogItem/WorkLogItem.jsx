@@ -123,7 +123,7 @@ const WorkLogItem = ({ data }) => {
           />
         )}
 
-        <Flex alignItems="flex-start" position="relative" minH="60px" mr={2}>
+        <Flex alignItems="flex-start" position="relative" minH="50px" mr={2}>
           <DescriptionInput
             register={register("description", {
               validate: handleTextValidate,

@@ -19,10 +19,11 @@ const DescriptionInput = ({
         w="100%"
         cursor="pointer"
         border="1px solid transparent"
-        minH="50px"
+        minH="52px"
         borderColor={error ? "tomato" : "transparent"}
       />
       <EditableTextarea
+        h="52px"
         w="100%"
         fontWeight={600}
         fontFamily="Open sans"
