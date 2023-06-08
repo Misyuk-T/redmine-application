@@ -70,6 +70,7 @@ const Form = () => {
   return (
     <Card
       as="form"
+      position="relative"
       onSubmit={onSubmit}
       method="post"
       encType="multipart/form-data"
@@ -78,7 +79,9 @@ const Form = () => {
       m="0 0 0 auto"
     >
       <CardBody as={Stack}>
-        <Heading size="md">Worklogs form</Heading>
+        <Heading size="md" mb={2}>
+          Worklogs form
+        </Heading>
 
         <Flex gap={50} alignItems="end" flexWrap="wrap">
           <Flex gap={50}>
@@ -89,6 +92,15 @@ const Form = () => {
               isInvalid={!!errors.file}
               isRequired
             >
+              <Text
+                position="absolute"
+                as={FormErrorMessage}
+                fontSize="sm"
+                color="tomato"
+                top="12px"
+              >
+                {errors.file && errors?.file.message}
+              </Text>
               <Text as={FormLabel} fontSize="md">
                 Choose a file:
               </Text>
@@ -97,9 +109,6 @@ const Form = () => {
                 onReset={() => resetField("file")}
                 register={register("file", { validate: validateFiles })}
               />
-              <Text as={FormErrorMessage} fontSize="md" color="tomato">
-                {errors.file && errors?.file.message}
-              </Text>
             </FormControl>
 
             <FormControl isInvalid={!!errors.type}>

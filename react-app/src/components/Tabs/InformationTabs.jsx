@@ -59,7 +59,7 @@ const InformationTabs = () => {
         <TotalInformationTab workLogs={workLogsArray} />
 
         {workLogsArray.map(([date, logs]) => {
-          return <TabItem key={date} dayLogs={logs} />;
+          return <TabItem key={date} dayLogs={logs} date={date} />;
         })}
 
         <BoxOverlay bgColor="blackAlpha.50" />

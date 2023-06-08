@@ -15,10 +15,12 @@ function App() {
         width="auto"
         maxW={{ xl: "1200px" }}
         px={["16px", "24px"]}
+        flexGrow={1}
+        flexShrink={0}
         alignItems="stretch"
         h="100%"
         w="100%"
-        mt={30}
+        pt={30}
         centerContent
       >
         <Form />

@@ -17,6 +17,7 @@ const RadioGroup = ({ control }) => {
           onChange={onChange}
           ref={ref}
           value={value}
+          gap={0}
         >
           <Radio name="type" value="jira">
             Jira export

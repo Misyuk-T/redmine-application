@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 
-const BoxOverlay = ({ bgColor, children }) => (
+const BoxOverlay = ({ bgColor, children, ...rest }) => (
   <Box
     bg="red"
     sx={{
@@ -13,6 +13,7 @@ const BoxOverlay = ({ bgColor, children }) => (
     top={0}
     ml="calc((-100vw + 100%) / 2)"
     zIndex={-3}
+    {...rest}
   >
     {children}
   </Box>

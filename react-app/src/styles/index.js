@@ -14,13 +14,19 @@ const theme = extendTheme({
   },
   styles: {
     global: {
-      "html, body": {
+      body: {
+        display: "flex",
+        flex: "1 0 auto",
+        overflowX: "hidden",
         height: "100%",
       },
-      "#root": {
+      html: {
         display: "flex",
         flexDirection: "column",
-        height: "100%",
+        minHeight: "100%",
+      },
+      "#root": {
+        flex: "1 0 auto",
       },
     },
   },
