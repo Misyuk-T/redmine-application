@@ -1,4 +1,12 @@
+import { useEffect } from "react";
 import { ChakraProvider, Container, Flex } from "@chakra-ui/react";
+
+import useRedmineStore from "./store/redmineStore";
+import {
+  getLatestRedmineWorkLogs,
+  getRedmineProjects,
+  redmineLogin,
+} from "./actions/redmine";
 
 import Form from "./components/Form/Form";
 import InformationTabs from "./components/Tabs/InformationTabs";
@@ -6,14 +14,29 @@ import BoxOverlay from "./components/BoxOverlay";
 
 import theme from "./styles/index";
 
-function App() {
+const App = () => {
+  const { addUser, addProjects } = useRedmineStore();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await redmineLogin();
+      addUser(user);
+      return user;
+    };
+
+    fetchUser().then(async (user) => {
+      addProjects(await getRedmineProjects(user.id));
+      await getLatestRedmineWorkLogs(user.id);
+    });
+  }, []);
+
   return (
     <ChakraProvider theme={theme} resetCSS>
       <Container
         as={Flex}
         position="relative"
         width="auto"
-        maxW={{ xl: "1200px" }}
+        maxW="1200px"
         px={["16px", "24px"]}
         flexGrow={1}
         flexShrink={0}
@@ -29,6 +52,6 @@ function App() {
       <BoxOverlay bgColor="blackAlpha.50" />
     </ChakraProvider>
   );
-}
+};
 
 export default App;

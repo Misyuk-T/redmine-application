@@ -14,16 +14,19 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 
-import useWorkLogsStore from "../../../store/store";
+import useWorkLogsStore from "../../../store/worklogsStore";
+import useRedmineStore from "../../../store/redmineStore";
 import {
   getFormattedStringDate,
   getCorrectGMTDateObject,
 } from "../../../helpers/getFormattedDate";
+import { getSelectValue } from "../../../helpers/transformToSelectData";
 
 import DescriptionInput from "./DescriptionInput";
 import DatePicker from "./DatePicker";
 import HoursInput from "./HoursInput";
 import StatusSwitch from "./StatusSwitch";
+import ProjectsSelect from "./ProjectsSelect";
 
 const handleNumbersValidate = (value) => {
   if (isNaN(value) || value > 8 || value <= 0) {
@@ -49,7 +52,8 @@ const WorkLogItem = ({ data }) => {
     blb: data.blb,
   };
 
-  const { workLogs, updateWorkLog, deleteWorkLog } = useWorkLogsStore();
+  const { projects } = useRedmineStore();
+  const { updateWorkLog, deleteWorkLog } = useWorkLogsStore();
   const {
     handleSubmit,
     control,
@@ -64,7 +68,7 @@ const WorkLogItem = ({ data }) => {
   const [isEdited, setIsEdited] = useState(false);
   const originDate = useRef(data.date);
 
-  const isNewTask = data.description === "New empty task";
+  const isNewTask = data.description === "New task";
   const isNotValidCard = Object.entries(errors).length;
   const borderCardColor = isNotValidCard
     ? "tomato"
@@ -78,7 +82,7 @@ const WorkLogItem = ({ data }) => {
   };
 
   const handleSave = (formData) => {
-    const { description, date, hours, blb } = formData;
+    const { description, date, hours, blb, project } = formData;
 
     const updatedData = {
       ...data,
@@ -86,6 +90,7 @@ const WorkLogItem = ({ data }) => {
       date: getFormattedStringDate(date),
       hours: hours || data.hours,
       blb: blb || data.blb,
+      project: project.value,
     };
 
     updateWorkLog(originDate.current, data.id, updatedData);
@@ -169,17 +174,27 @@ const WorkLogItem = ({ data }) => {
           </Flex>
         </Flex>
 
-        {(data.project || data.task) && (
-          <Stack mt={2}>
+        <Stack mt={2}>
+          <Flex alignItems="center" w="100%">
             <Text m={0}>
-              <strong>Project:</strong> {data.project}
+              <strong>Project:</strong>{" "}
             </Text>
+            <ProjectsSelect
+              value={watch("project") || getSelectValue(data.project, projects)}
+              control={control}
+              onChange={(project) => {
+                setValue("project", project);
+                setIsEdited(true);
+              }}
+            />
+          </Flex>
 
+          {data.task && (
             <Text m={0}>
               <strong>Task:</strong> {data.task}
             </Text>
-          </Stack>
-        )}
+          )}
+        </Stack>
 
         <Flex alignItems="center" justifyContent="space-between" mt={3} h={8}>
           <Controller

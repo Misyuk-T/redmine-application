@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -12,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import useWorkLogsStore from "../../store/store";
+import useWorkLogsStore from "../../store/worklogsStore";
 
 import FileUpload from "./FileUpload";
 import RadioGroup from "./RadioGroup";
@@ -20,22 +21,16 @@ import RadioGroup from "./RadioGroup";
 import { sendWorkLogs } from "../../actions/workLogs";
 
 const Form = () => {
-  const {
-    workLogs,
-    error,
-    addWorkLogs,
-    resetWorkLogs,
-    addWorkLog,
-    addWorkLogsError,
-    resetWorkLogsError,
-  } = useWorkLogsStore();
+  const { addWorkLogs, addWorkLogsError } = useWorkLogsStore();
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
     resetField,
   } = useForm();
+
+  const [isSent, setIsSent] = useState(false);
 
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
@@ -45,16 +40,16 @@ const Form = () => {
     await sendWorkLogs(formData)
       .then((data) => {
         data && addWorkLogs(data);
-        console.log("inside set data");
+        setIsSent(true);
       })
       .catch((error) => {
-        console.error("err2", error);
+        console.error("Error: ", error);
         addWorkLogsError(error);
       });
   });
 
   const validateFiles = (value) => {
-    if (value.length < 1) {
+    if (!value || value.length < 1) {
       return "Files is required";
     }
     for (const file of Array.from(value)) {
@@ -64,6 +59,7 @@ const Form = () => {
         return "Max file size 10mb";
       }
     }
+
     return true;
   };
 
@@ -73,6 +69,7 @@ const Form = () => {
       position="relative"
       onSubmit={onSubmit}
       method="post"
+      boxShadow="md"
       encType="multipart/form-data"
       width="fit-content"
       bg="green.50"
@@ -106,7 +103,10 @@ const Form = () => {
               </Text>
               <FileUpload
                 accept={"text"}
-                onReset={() => resetField("file")}
+                onReset={() => {
+                  resetField("file");
+                  setIsSent(false);
+                }}
                 register={register("file", { validate: validateFiles })}
               />
             </FormControl>
@@ -129,6 +129,7 @@ const Form = () => {
             colorScheme="teal"
             isLoading={isSubmitting}
             type="submit"
+            isDisabled={isSent || !isValid}
           >
             Submit
           </Button>

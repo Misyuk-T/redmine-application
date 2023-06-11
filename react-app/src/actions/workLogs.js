@@ -1,10 +1,9 @@
-import axios from "axios";
+import { instance } from "./axios";
 
 export const sendWorkLogs = (formData) => {
-  return axios
-    .post("http://localhost:8000/submit-form", formData)
+  return instance
+    .post("/submit-form", formData)
     .then((response) => {
-      console.log("response data");
       return response.data;
     })
     .catch((error) => {

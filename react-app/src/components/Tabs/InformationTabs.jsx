@@ -1,26 +1,17 @@
 import { Tab, TabList, TabPanels, Tabs } from "@chakra-ui/react";
 import BoxOverlay from "../BoxOverlay";
 
-import styles from "./InformationTabs.module.scss";
-import useWorkLogsStore from "../../store/store";
-import TotalInformationTab from "./TotalnformationTab";
+import useWorkLogsStore from "../../store/worklogsStore";
+
+import TotalInformationTab from "./TotalInformationTab/TotalnformationTab";
 import TabItem from "./TabItem";
 
+import styles from "./InformationTabs.module.scss";
+
 const InformationTabs = () => {
-  const {
-    workLogs,
-    error,
-    addWorkLogs,
-    resetWorkLogs,
-    addWorkLog,
-    editWorkLog,
-    addWorkLogsError,
-    resetWorkLogsError,
-  } = useWorkLogsStore();
+  const { workLogs } = useWorkLogsStore();
 
   const workLogsArray = workLogs ? Object.entries(workLogs) : [];
-
-  console.log(workLogs, "workLogs");
 
   return (
     <Tabs
@@ -39,7 +30,7 @@ const InformationTabs = () => {
           Total information
         </Tab>
 
-        {workLogsArray.map(([date], index) => {
+        {workLogsArray.map(([date]) => {
           const [month, day] = date.split("-");
 
           return (
@@ -56,7 +47,7 @@ const InformationTabs = () => {
       </TabList>
 
       <TabPanels h="calc(100% - 45px)" position="relative">
-        <TotalInformationTab workLogs={workLogsArray} />
+        <TotalInformationTab data={workLogsArray} />
 
         {workLogsArray.map(([date, logs]) => {
           return <TabItem key={date} dayLogs={logs} date={date} />;

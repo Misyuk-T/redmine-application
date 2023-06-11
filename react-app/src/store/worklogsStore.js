@@ -48,6 +48,20 @@ const useWorkLogsStore = create((set, get) => ({
       return { workLogs: oldState };
     });
   },
+  addBulkWorkLogProject: (projectId) => {
+    set((state) => {
+      const oldState = { ...state.workLogs };
+      const dates = Object.keys(oldState);
+      dates.forEach((date) => {
+        oldState[date] = oldState[date].map((workLog) => ({
+          ...workLog,
+          project: projectId,
+        }));
+      });
+
+      return { workLogs: oldState };
+    });
+  },
   addWorkLogsError: (error) => set({ error }),
   resetWorkLogsError: () => set({ error: "" }),
 }));

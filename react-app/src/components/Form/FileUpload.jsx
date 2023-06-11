@@ -26,8 +26,8 @@ const FileUpload = ({ register, accept, multiple, onReset }) => {
   return (
     <InputGroup onClick={handleClick}>
       <Box
-        as={"input"}
-        type={"file"}
+        as="input"
+        type="file"
         multiple={multiple || false}
         hidden
         accept={accept}
