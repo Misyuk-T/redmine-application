@@ -1,11 +1,9 @@
-import { format } from "date-fns";
-
 export const transformToRedmineData = (workLogs) => {
   const redmineData = [];
 
   for (const key in workLogs) {
     if (workLogs.hasOwnProperty(key)) {
-      const currentDate = format(new Date(key), "yyyy-MM-dd");
+      const currentDate = key.split("-").reverse().join("-");
       const blb = workLogs[key][0].blb === "blb" ? "1" : "3";
 
       for (const item of workLogs[key]) {

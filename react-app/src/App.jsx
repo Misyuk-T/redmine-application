@@ -11,11 +11,12 @@ import {
 import Form from "./components/Form/Form";
 import InformationTabs from "./components/Tabs/InformationTabs";
 import BoxOverlay from "./components/BoxOverlay";
+import RedmineCard from "./components/RedmineCard/RedmineCard";
 
 import theme from "./styles/index";
 
 const App = () => {
-  const { addUser, addProjects } = useRedmineStore();
+  const { addUser, addProjects, addLatestActivity } = useRedmineStore();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,7 +27,7 @@ const App = () => {
 
     fetchUser().then(async (user) => {
       addProjects(await getRedmineProjects(user.id));
-      await getLatestRedmineWorkLogs(user.id);
+      addLatestActivity(await getLatestRedmineWorkLogs(user.id));
     });
   }, []);
 
@@ -46,7 +47,10 @@ const App = () => {
         pt={30}
         centerContent
       >
-        <Form />
+        <Flex gap={5} alignSelf="flex-end" w="90%">
+          <RedmineCard />
+          <Form />
+        </Flex>
         <InformationTabs />
       </Container>
       <BoxOverlay bgColor="blackAlpha.50" />

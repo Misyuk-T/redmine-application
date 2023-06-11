@@ -90,7 +90,7 @@ const WorkLogItem = ({ data }) => {
       date: getFormattedStringDate(date),
       hours: hours || data.hours,
       blb: blb || data.blb,
-      project: project.value,
+      project: project?.value || "",
     };
 
     updateWorkLog(originDate.current, data.id, updatedData);
@@ -174,7 +174,7 @@ const WorkLogItem = ({ data }) => {
           </Flex>
         </Flex>
 
-        <Stack mt={2}>
+        <Stack mt={1}>
           <Flex alignItems="center" w="100%">
             <Text m={0}>
               <strong>Project:</strong>{" "}
@@ -196,7 +196,7 @@ const WorkLogItem = ({ data }) => {
           )}
         </Stack>
 
-        <Flex alignItems="center" justifyContent="space-between" mt={3} h={8}>
+        <Flex alignItems="center" justifyContent="space-between" mt={2} h={8}>
           <Controller
             name="blb"
             control={control}

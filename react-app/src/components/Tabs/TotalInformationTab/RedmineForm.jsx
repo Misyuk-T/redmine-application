@@ -7,17 +7,22 @@ import Select from "react-select";
 import useWorkLogsStore from "../../../store/worklogsStore";
 import useRedmineStore from "../../../store/redmineStore";
 
-import { trackTimeToRedmine } from "../../../actions/redmine";
+import {
+  getLatestRedmineWorkLogs,
+  trackTimeToRedmine,
+} from "../../../actions/redmine";
 import { transformToSelectData } from "../../../helpers/transformToSelectData";
 
 const RedmineForm = () => {
   const { addBulkWorkLogProject, workLogs } = useWorkLogsStore();
-  const { projects } = useRedmineStore();
+  const { projects, resetLatestActivity, addLatestActivity, user } =
+    useRedmineStore();
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [isProjectsSelected, setIsProjectsSelected] = useState(false);
 
   const formattedProjectData = transformToSelectData(projects);
+  const isWorkLogsExist = workLogs && Object.entries(workLogs).length > 0;
 
   const handleAddProject = () => {
     addBulkWorkLogProject(selectedItem.value);
@@ -25,7 +30,10 @@ const RedmineForm = () => {
   };
 
   const handleSubmit = async () => {
-    await trackTimeToRedmine(workLogs);
+    await trackTimeToRedmine(workLogs).then(async () => {
+      resetLatestActivity();
+      addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+    });
   };
 
   return (
@@ -53,7 +61,7 @@ const RedmineForm = () => {
 
       <Button
         onClick={handleSubmit}
-        isDisabled={!isProjectsSelected}
+        isDisabled={!isProjectsSelected || !user?.id || !isWorkLogsExist}
         colorScheme="teal"
         size="md"
       >

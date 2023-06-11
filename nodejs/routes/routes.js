@@ -48,8 +48,8 @@ router.all("/redmine/*", async (req, res) => {
 
     res.send(response.data);
   } catch (error) {
-    res.status(500).send("Internal server error");
-    throw new Error(`Error while get Redmine API: ${error}`);
+    console.error("Error: ", error);
+    res.status(500).send(`Internal server error: ${error}`);
   }
 });
 

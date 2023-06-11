@@ -21,7 +21,7 @@ import RadioGroup from "./RadioGroup";
 import { sendWorkLogs } from "../../actions/workLogs";
 
 const Form = () => {
-  const { addWorkLogs, addWorkLogsError } = useWorkLogsStore();
+  const { addWorkLogs, addWorkLogsError, resetWorkLogs } = useWorkLogsStore();
   const {
     register,
     handleSubmit,
@@ -73,14 +73,15 @@ const Form = () => {
       encType="multipart/form-data"
       width="fit-content"
       bg="green.50"
-      m="0 0 0 auto"
+      w="50%"
+      alignSelf="baseline"
     >
-      <CardBody as={Stack}>
+      <CardBody as={Stack} p={4}>
         <Heading size="md" mb={2}>
           Worklogs form
         </Heading>
 
-        <Flex gap={50} alignItems="end" flexWrap="wrap">
+        <Flex alignItems="end" flexWrap="wrap" gap={5}>
           <Flex gap={50}>
             <FormControl
               as={Flex}
@@ -106,6 +107,7 @@ const Form = () => {
                 onReset={() => {
                   resetField("file");
                   setIsSent(false);
+                  resetWorkLogs();
                 }}
                 register={register("file", { validate: validateFiles })}
               />
@@ -124,6 +126,7 @@ const Form = () => {
           </Flex>
 
           <Button
+            m="0 0 0 auto"
             flexShrink={0}
             mt={4}
             colorScheme="teal"

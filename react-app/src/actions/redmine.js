@@ -10,7 +10,6 @@ export const redmineLogin = async () => {
     return response.data.user;
   } catch (error) {
     console.error("Error during login:", error);
-    throw error;
   }
 };
 
@@ -36,49 +35,58 @@ export const getRedmineProjects = async (id) => {
     return [...new Set(extractedData)];
   } catch (error) {
     console.error("Error while getting issues:", error.response.data);
-    throw error;
   }
 };
 
-export const getLatestRedmineWorkLogs = async (id) => {
+export const getLatestRedmineWorkLogs = async (
+  id,
+  year = new Date().getFullYear(),
+  month = new Date().getMonth() + 1,
+  offset = 0,
+  workLogs = []
+) => {
   try {
-    const response = await instance.get(`/redmine/time_entries.json`, {
+    const fromDate = new Date(year, month - 1, 2);
+    const toDate = new Date(year, month, 1);
+
+    const response = await instance.get("/redmine/time_entries.json", {
       params: {
-        from: "2023-06-01",
-        to: "2023-06-29",
+        from: fromDate.toISOString().split("T")[0],
+        to: toDate.toISOString().split("T")[0],
         user_id: id,
-        limit: 50,
+        limit: 100,
+        offset: offset,
       },
     });
 
-    // Process the response data
-    const workLogs = response.data.time_entries;
-    console.log(workLogs, "YOUR LATEST REDMINE WORKLOGS");
+    const data = response.data.time_entries;
+    workLogs.push(...data);
+
+    if (data.length === 100) {
+      // If there are more items, recursively call the function with an updated offset
+      return getLatestRedmineWorkLogs(id, year, month, offset + 100, workLogs);
+    } else {
+      // If no more items, return the collected workLogs
+      return workLogs;
+    }
   } catch (error) {
     console.error("Error fetching worklogs:", error);
-    throw error;
   }
 };
 
 export const trackTimeToRedmine = async (data) => {
-  console.log(data, "data");
-
   try {
-    console.log(data);
-    if (!data || !Object.keys(data).length) {
-      throw new Error(`Data is empty.`);
-    }
-
     validateWorkLogsData(data);
-    console.log("after validate");
     const redmineData = transformToRedmineData(data);
 
-    console.log(redmineData, "redmineData in transform function");
-    //  instance.post(`redmine/time_entries.json`, timeEntry)
-    // const responses = await Promise.all(requests);
+    // Make a POST request for each entry in the redmineData array
+    const requests = redmineData.map((entry) => {
+      return instance.post(`/redmine/time_entries.json`, entry);
+    });
+
+    await Promise.all(requests);
     console.log(`successfully tracked`);
   } catch (error) {
     console.error("Error while tracking time:", error);
-    // throw error;
   }
 };
