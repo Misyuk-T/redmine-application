@@ -33,7 +33,7 @@ const getFormatWorksheetData = (worksheetData) => {
       description,
       hours,
       blb: "nblb",
-      project: item["Project Name"] || "",
+      project: "",
       task: item["Ticket No"] || "",
     };
 

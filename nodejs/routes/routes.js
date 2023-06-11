@@ -1,6 +1,7 @@
 const fs = require("fs");
 const express = require("express");
 const path = require("path");
+const axios = require("axios");
 
 const { multer } = require("../middlewares");
 const { parseText, parseXMLS } = require("../scripts");
@@ -33,6 +34,23 @@ router.post("/submit-form", multer.single("file"), async (req, res) => {
       res.status(400).send(error.message);
     }
   });
+});
+
+router.all("/redmine/*", async (req, res) => {
+  try {
+    const redmineURL = "https://redmine.anyforsoft.com";
+    const url = `${redmineURL}${req.originalUrl.replace("/redmine", "")}`;
+    const response = await axios({
+      method: req.method,
+      url,
+      data: req.body,
+    });
+
+    res.send(response.data);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+    throw new Error(`Error while get Redmine API: ${error}`);
+  }
 });
 
 module.exports = router;

@@ -6,7 +6,7 @@ const {
 } = require("./helpers");
 
 const getFormattedDate = (date) => {
-  const [month, day] = date.split(".");
+  const [day, month] = date.split(".");
   const currentYear = new Date().getFullYear();
 
   return new Date(`${day}-${month}-${currentYear}`)
