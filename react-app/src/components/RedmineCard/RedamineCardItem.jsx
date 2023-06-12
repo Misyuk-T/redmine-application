@@ -2,7 +2,7 @@ import { Text, Stack, Flex, Box, LinkOverlay, LinkBox } from "@chakra-ui/react";
 
 import useRedmineStore from "../../store/redmineStore";
 
-const RedmineCardItem = ({ activities }) => {
+const RedmineCardItem = ({ activities, fontSize }) => {
   const { projects } = useRedmineStore();
 
   return (
@@ -24,22 +24,25 @@ const RedmineCardItem = ({ activities }) => {
                 <LinkOverlay
                   href={`https://redmine.anyforsoft.com/time_entries/${activity.id}/edit`}
                   target="_blank"
-                  fontSize="xs"
+                  fontSize={fontSize}
                   fontWeight={700}
                 >
                   {project ? project.projectName : "Untracked project"}
                 </LinkOverlay>
-                {project && <Text fontSize="xs">{project.subject}</Text>}
+                {project && <Text fontSize={fontSize}>{project.subject}</Text>}
 
-                <Text fontSize="xs" color={blb === "blb" ? "green" : "tomato"}>
+                <Text
+                  fontSize={fontSize}
+                  color={blb === "blb" ? "green" : "tomato"}
+                >
                   ({blb})
                 </Text>
 
-                <Text as="strong" fontSize="xs">
+                <Text as="strong" fontSize={fontSize}>
                   {activity.hours}h
                 </Text>
               </Flex>
-              <Text fontStyle="italic" fontSize="xs">
+              <Text fontStyle="italic" fontSize={fontSize}>
                 {activity.comments}
               </Text>
             </Stack>
