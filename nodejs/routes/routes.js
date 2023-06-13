@@ -48,7 +48,32 @@ router.all("/redmine/*", async (req, res) => {
 
     res.send(response.data);
   } catch (error) {
-    console.error("Error: ", error);
+    console.error("Error while connecting to Redmine: ", error);
+    res.status(500).send(`Internal server error: ${error}`);
+  }
+});
+
+router.all("/jira/*", async (req, res) => {
+  try {
+    const redmineURL = "https://anyforsoft.atlassian.net";
+    const url = `${redmineURL}${req.originalUrl.replace("/jira", "")}`;
+    const apiKey = req.headers["x-api-key"];
+    const apiEmail = req.headers["x-api-email"];
+
+    const response = await axios({
+      method: req.method,
+      url,
+      data: req.body,
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${apiEmail}:${apiKey}`).toString(
+          "base64"
+        )}`,
+      },
+    });
+
+    res.send(response.data);
+  } catch (error) {
+    console.error("Error while connecting to JIRA: ", error);
     res.status(500).send(`Internal server error: ${error}`);
   }
 });

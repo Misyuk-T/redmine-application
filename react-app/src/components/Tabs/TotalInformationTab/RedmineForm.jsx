@@ -53,7 +53,7 @@ const RedmineForm = () => {
           variant="outline"
           colorScheme="orange"
           size="md"
-          isDisabled={!selectedItem}
+          isDisabled={!selectedItem || !isWorkLogsExist}
         >
           Set project to all tasks
         </Button>

@@ -1,7 +1,10 @@
 import { useEffect } from "react";
-import { ChakraProvider, Container, Flex } from "@chakra-ui/react";
+import { ChakraProvider, Container, Flex, Stack } from "@chakra-ui/react";
 
 import useRedmineStore from "./store/redmineStore";
+import useJiraStore from "./store/jiraStore";
+
+import { jiraLogin } from "./actions/jira";
 import {
   getLatestRedmineWorkLogs,
   getRedmineProjects,
@@ -12,22 +15,33 @@ import Form from "./components/Form/Form";
 import InformationTabs from "./components/Tabs/InformationTabs";
 import BoxOverlay from "./components/BoxOverlay";
 import RedmineCard from "./components/RedmineCard/RedmineCard";
+import JiraModal from "./components/Modals/JiraModal";
+import Avatar from "./components/Avatar";
+import SettingModals from "./components/Modals/SettingModals";
 
 import theme from "./styles/index";
 
 const App = () => {
-  const { addUser, addProjects, addLatestActivity } = useRedmineStore();
+  const { addUser: addJiraUser, user: jiraUser } = useJiraStore();
+  const { addUser, addProjects, addLatestActivity, user } = useRedmineStore();
+
+  const fetchRedmineUser = async () => {
+    const user = await redmineLogin();
+    addUser(user);
+    return user;
+  };
+
+  const fetchJiraUser = async () => {
+    addJiraUser(await jiraLogin());
+  };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const user = await redmineLogin();
-      addUser(user);
-      return user;
-    };
-
-    fetchUser().then(async (user) => {
-      addProjects(await getRedmineProjects(user.id));
-      addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+    fetchJiraUser().then();
+    fetchRedmineUser().then(async (user) => {
+      if (user) {
+        addProjects(await getRedmineProjects(user.id));
+        addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+      }
     });
   }, []);
 
@@ -47,10 +61,25 @@ const App = () => {
         pt={30}
         centerContent
       >
-        <Flex gap={5} alignSelf="flex-end" w="90%">
-          <RedmineCard />
-          <Form />
+        <Flex justifyContent="space-between" gap={5}>
+          <Flex gap={5} w="90%">
+            <RedmineCard />
+            <Form />
+          </Flex>
+
+          <Stack justifyContent="space-between" maxH="152px">
+            <Stack>
+              <Avatar title="redmine" user={user} />
+              <Avatar title="jira" user={jiraUser} />
+            </Stack>
+
+            <Flex gap={2} alignSelf="flex-start">
+              <SettingModals />
+              <JiraModal />
+            </Flex>
+          </Stack>
         </Flex>
+
         <InformationTabs />
       </Container>
       <BoxOverlay bgColor="blackAlpha.50" />
