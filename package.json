@@ -1,0 +1,37 @@
+{
+  "name": "redmine_tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Misyuk-T/redmine-application.git"
+  },
+  "build": {
+    "extraResources": "nodejs",
+    "win": {
+      "target": "portable"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "keywords": ["electron", "react", "nodejs", "zustand", "axios", "redmine", "jira"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Misyuk-T/redmine-application/issues"
+  },
+  "homepage": "https://github.com/Misyuk-T/redmine-application#readme",
+  "devDependencies": {
+    "electron": "^25.1.0",
+    "electron-builder": "^23.6.0"
+  }
+}

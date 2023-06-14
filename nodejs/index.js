@@ -10,6 +10,11 @@ app.use(express.json());
 app.use(cors);
 app.use(routes);
 
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
+const server = () =>
+  app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+  });
+
+server();
+
+module.exports = server;

@@ -12,7 +12,7 @@ const Avatar = ({ title, user }) => {
     ? user?.displayName
     : `${user?.firstname} ${user?.lastname}`;
   const userImage = isJiraUser ? user?.avatarUrls["48x48"] : user?.avatar_url;
-  const connectedTitle = user ? "Connected to: " : "Disconnected from: ";
+  const connectedTitle = user ? "Connected to: " : "Disconnected: ";
 
   return (
     <Flex gap={1} boxShadow="sm" p={1} w="100%" alignItems="center" bg="white">

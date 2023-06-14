@@ -3,9 +3,15 @@ import { instance } from "./axios";
 import { transformToRedmineData } from "../helpers/transformToRedmineData";
 import { validateWorkLogsData } from "../helpers/validateWorklogsData";
 
+const apiKey = process.env.REACT_APP_REDMINE_KEY;
+
 export const redmineLogin = async () => {
   try {
-    const response = await instance.get(`/redmine/users/current.json`);
+    const response = await instance.get(`/redmine/users/current.json`, {
+      params: {
+        key: `${apiKey}`,
+      },
+    });
 
     return response.data.user;
   } catch (error) {
@@ -16,10 +22,20 @@ export const redmineLogin = async () => {
 export const getRedmineProjects = async (id) => {
   try {
     const assignedResponse = await instance.get(
-      `/redmine/issues.json?assigned_to_id=${id}`
+      `/redmine/issues.json?assigned_to_id=${id}`,
+      {
+        params: {
+          key: `${apiKey}`,
+        },
+      }
     );
     const watchedResponse = await instance.get(
-      `/redmine/issues.json?&watcher_id=${id}`
+      `/redmine/issues.json?&watcher_id=${id}`,
+      {
+        params: {
+          key: `${apiKey}`,
+        },
+      }
     );
     const assignedIssues = assignedResponse.data.issues;
     const watchedIssues = watchedResponse.data.issues;
@@ -56,6 +72,7 @@ export const getLatestRedmineWorkLogs = async (
         user_id: id,
         limit: 100,
         offset: offset,
+        key: `${apiKey}`,
       },
     });
 
@@ -81,11 +98,14 @@ export const trackTimeToRedmine = async (data) => {
 
     // Make a POST request for each entry in the redmineData array
     const requests = redmineData.map((entry) => {
-      return instance.post(`/redmine/time_entries.json`, entry);
+      return instance.post(`/redmine/time_entries.json`, entry, {
+        params: {
+          key: `${apiKey}`,
+        },
+      });
     });
 
     await Promise.all(requests);
-    console.log(`successfully tracked`);
   } catch (error) {
     console.error("Error while tracking time:", error);
   }
