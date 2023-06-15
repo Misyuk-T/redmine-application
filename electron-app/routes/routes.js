@@ -16,7 +16,7 @@ router
       store.set("apiKeys", apiKeys);
       res.status(200);
     } catch (error) {
-      console.error("Error while connecting to Redmine: ", error);
+      console.error("Error while save settings: ", error);
       res.status(500).send(`Server error while save settings`);
     }
   })
@@ -25,7 +25,7 @@ router
       const savedApiKeys = store.get("apiKeys");
       res.status(200).send(savedApiKeys);
     } catch (error) {
-      console.error("Error while connecting to Redmine: ", error);
+      console.error("Error while get settings: ", error);
       res.status(500).send(`Server error while getting settings`);
     }
   });

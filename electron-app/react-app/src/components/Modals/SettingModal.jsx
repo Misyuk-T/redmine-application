@@ -136,10 +136,9 @@ const SettingModal = () => {
           addProjects(await getRedmineProjects(user.id));
           addLatestActivity(await getLatestRedmineWorkLogs(user.id));
         }
+        onClose();
       });
     });
-
-    onClose();
   };
 
   const fetchSettings = async () => {
