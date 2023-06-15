@@ -28,7 +28,6 @@ const SettingModalItem = ({
   rightAddon,
   errors,
 }) => {
-  console.log(errors);
   return (
     <>
       <Box>

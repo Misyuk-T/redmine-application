@@ -1,4 +1,3 @@
-const fs = require("fs");
 const express = require("express");
 const path = require("path");
 const axios = require("axios");
@@ -35,28 +34,25 @@ router.post("/submit-form", multer.single("file"), async (req, res) => {
   const formData = req.body;
   const fileType = formData.type;
   const file = req.file;
-  const fileExtension = path.extname(file.path);
+  const fileExtension = path.extname(file.originalname);
   const isXLSXFile = fileExtension === ".xlsx";
   const isTextFile = fileExtension === ".txt";
   const isJiraFile = fileType === "jira";
 
-  fs.readFile(file.path, "utf8", (err, data) => {
-    try {
-      if ((isJiraFile && isXLSXFile) || (!isJiraFile && isTextFile)) {
-        const parsedResponse = isJiraFile
-          ? parseXMLS(file.path)
-          : parseText(data);
-        res.send(parsedResponse);
-      } else {
-        throw new Error(
-          "Invalid file extension. Only .txt for custom and .xlsx for jira files are supported."
-        );
-      }
-    } catch (error) {
-      console.error("Error: ", error);
-      res.status(500).send(`Error while parsing file on server: ${error}`);
+  try {
+    if ((isJiraFile && isXLSXFile) || (!isJiraFile && isTextFile)) {
+      const data = file.buffer.toString("utf8");
+      const parsedResponse = isJiraFile ? parseXMLS(data) : parseText(data);
+      res.send(parsedResponse);
+    } else {
+      throw new Error(
+        "Invalid file extension. Only .txt for custom and .xlsx for jira files are supported."
+      );
     }
-  });
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).send(`Error while parsing file on server: ${error}`);
+  }
 });
 
 router.all("/redmine/*", async (req, res) => {
