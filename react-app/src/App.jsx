@@ -17,7 +17,7 @@ import BoxOverlay from "./components/BoxOverlay";
 import RedmineCard from "./components/RedmineCard/RedmineCard";
 import JiraModal from "./components/Modals/JiraModal";
 import Avatar from "./components/Avatar";
-import SettingModals from "./components/Modals/SettingModals";
+import SettingModal from "./components/Modals/SettingModal";
 
 import theme from "./styles/index";
 
@@ -74,7 +74,7 @@ const App = () => {
             </Stack>
 
             <Flex gap={2} alignSelf="flex-start">
-              <SettingModals />
+              <SettingModal />
               <JiraModal />
             </Flex>
           </Stack>

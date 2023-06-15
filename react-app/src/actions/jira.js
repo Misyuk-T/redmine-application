@@ -23,7 +23,7 @@ export const getJiraWorklogsByDateRange = async (
   try {
     const response = await instance.get("/jira/rest/api/2/search", {
       params: {
-        jql: `worklogAuthor = currentUser() OR assignee = currentUser() AND updated >= ${startDate} AND updated <= ${endDate}`,
+        jql: `worklogAuthor = currentUser() AND worklogDate >= '${startDate}' AND worklogDate <= '${endDate}'`,
         maxResults: 100,
         startAt: offset,
         fields: "summary,worklog,issuetype,parent,project,status,assignee",
@@ -43,7 +43,10 @@ export const getJiraWorklogsByDateRange = async (
         updatedWorklogs
       );
     } else {
-      return groupByField(updatedWorklogs, "date");
+      const sortedWorklogs = updatedWorklogs.sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+      );
+      return groupByField(sortedWorklogs, "date");
     }
   } catch (error) {
     console.error("Error while fetching recent worklogs:", error);

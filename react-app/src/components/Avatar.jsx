@@ -4,18 +4,28 @@ import {
   Text,
   Avatar as ChakraAvatar,
   Flex,
+  LinkOverlay,
+  LinkBox,
 } from "@chakra-ui/react";
 
+import useRedmineStore from "../store/redmineStore";
+import useJiraStore from "../store/jiraStore";
+
 const Avatar = ({ title, user }) => {
+  const { organizationURL } = useRedmineStore();
+  const { organizationURL: jiraUrl } = useJiraStore();
+
   const isJiraUser = title === "jira";
   const userName = isJiraUser
     ? user?.displayName
     : `${user?.firstname} ${user?.lastname}`;
   const userImage = isJiraUser ? user?.avatarUrls["48x48"] : user?.avatar_url;
   const connectedTitle = user ? "Connected to: " : "Disconnected: ";
+  const avatarUrl = isJiraUser ? jiraUrl : organizationURL;
 
   return (
     <Flex
+      as={LinkBox}
       gap={1}
       boxShadow="sm"
       p={1}
@@ -36,9 +46,18 @@ const Avatar = ({ title, user }) => {
         <Text fontSize="xs" fontWeight={700} textAlign="center">
           {connectedTitle}
         </Text>
-        <Text fontSize="xs" textAlign="center">
+
+        <LinkOverlay
+          fontSize="xs"
+          textAlign="center"
+          href={avatarUrl}
+          target="_blank"
+          _hover={{
+            textDecoration: "underline",
+          }}
+        >
           {title}
-        </Text>
+        </LinkOverlay>
       </Stack>
     </Flex>
   );

@@ -1,12 +1,15 @@
-import { Flex, IconButton, SimpleGrid, TabPanel } from "@chakra-ui/react";
+import { Flex, IconButton, SimpleGrid, TabPanel, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
 import useWorkLogsStore from "../../store/worklogsStore";
 
 import WorkLogItem from "./WorklogItem/WorkLogItem";
+import { calculateTotals } from "../../helpers/calculateTotals";
 
 const TabItem = ({ dayLogs, date }) => {
   const { addWorkLog } = useWorkLogsStore();
+  const { totalTime, blbTime, nblbTime } = calculateTotals(dayLogs);
+  const textColor = totalTime !== 8 ? "tomato" : "green";
 
   const handleCreate = () => {
     addWorkLog(date, {
@@ -21,11 +24,26 @@ const TabItem = ({ dayLogs, date }) => {
 
   return (
     <TabPanel px={0}>
+      <Flex gap={5}>
+        <Text color={textColor}>
+          <Text as="span" fontWeight={700} color="black">
+            Total time:{" "}
+          </Text>
+          {totalTime}h
+        </Text>
+        <Text>
+          <strong>blb: </strong>
+          {blbTime}h
+        </Text>
+        <Text>
+          <strong>nblb: </strong>
+          {nblbTime}h
+        </Text>
+      </Flex>
       <SimpleGrid
-        justifyContent="center"
         minChildWidth={300}
         spacing={5}
-        mt={30}
+        mt={15}
         templateColumns="repeat(auto-fit, minmax(300px, 370px))"
       >
         {dayLogs.map((item, index) => {

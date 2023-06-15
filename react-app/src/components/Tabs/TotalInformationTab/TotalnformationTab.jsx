@@ -83,6 +83,7 @@ const TotalInformationTab = ({ data }) => {
                         textAlign="center"
                         fontWeight={500}
                         p={1}
+                        fontSize="xs"
                       >
                         {item === "undefined project"
                           ? item

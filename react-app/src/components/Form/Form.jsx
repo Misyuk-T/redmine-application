@@ -78,7 +78,7 @@ const Form = () => {
     >
       <CardBody as={Stack} p={4}>
         <Heading size="md" mb={2}>
-          Worklogs form
+          Import from file
         </Heading>
 
         <Flex alignItems="end" flexWrap="wrap" gap={5}>
@@ -134,7 +134,7 @@ const Form = () => {
             type="submit"
             isDisabled={isSent || !isValid}
           >
-            Submit
+            Import
           </Button>
         </Flex>
       </CardBody>

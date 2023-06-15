@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Button,
@@ -20,7 +20,16 @@ import {
 } from "@chakra-ui/react";
 import { UnlockIcon } from "@chakra-ui/icons";
 
+import useRedmineStore from "../../store/redmineStore";
+import useJiraStore from "../../store/jiraStore";
 import { getSettings, sendSettings } from "../../actions/settings";
+import {
+  getLatestRedmineWorkLogs,
+  getRedmineProjects,
+  redmineLogin,
+} from "../../actions/redmine";
+import { jiraLogin } from "../../actions/jira";
+
 import SettingModalItem from "./SettingModalItem";
 
 import RedmineApi from "../../assets/RedmineAPI.png";
@@ -92,6 +101,12 @@ const fieldItems = [
 ];
 
 const SettingModal = () => {
+  const { addOrganizationURL, addUser, addProjects, addLatestActivity } =
+    useRedmineStore();
+  const { addOrganizationURL: setJiraUrl, addUser: addJiraUser } =
+    useJiraStore();
+
+  const [initialValue, setInitialValue] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     register,
@@ -103,18 +118,50 @@ const SettingModal = () => {
     defaultValues: {},
   });
 
+  const fetchRedmineUser = async () => {
+    const user = await redmineLogin();
+    addUser(user);
+    return user;
+  };
+
+  const fetchJiraUser = async () => {
+    addJiraUser(await jiraLogin());
+  };
+
   const handleSaveApiKeys = async (data) => {
-    await sendSettings(data);
+    await sendSettings(data).then(() => {
+      fetchJiraUser().then();
+      fetchRedmineUser().then(async (user) => {
+        if (user) {
+          addProjects(await getRedmineProjects(user.id));
+          addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+        }
+      });
+    });
+
     onClose();
   };
 
   const fetchSettings = async () => {
     await getSettings().then((data) => {
-      setValue("redmineUrl", data?.redmineUrl || "");
-      setValue("jiraUrl", data?.jiraUrl || "");
+      const jiraOrganization = data?.jiraUrl || "";
+      const redmineOrganization = data?.redmineUrl || "";
+      const redmineUrl = redmineOrganization
+        ? `https://redmine.${redmineOrganization}.com`
+        : "";
+      const jiraUrl = jiraOrganization
+        ? `https://${jiraOrganization}.atlassian.net`
+        : "";
+
+      setValue("redmineUrl", redmineOrganization);
+      setValue("jiraUrl", jiraOrganization);
       setValue("redmineApiKey", data?.redmineApiKey || "");
       setValue("jiraApiKey", data?.jiraApiKey || "");
       setValue("jiraEmail", data?.jiraEmail || "");
+
+      addOrganizationURL(redmineUrl);
+      setJiraUrl(jiraUrl);
+      setInitialValue(data);
     });
   };
 
@@ -147,7 +194,7 @@ const SettingModal = () => {
             borderBottom="1px solid"
             borderColor="gray.300"
           >
-            Setting:
+            Settings:
           </ModalHeader>
           <ModalCloseButton />
 
@@ -176,7 +223,7 @@ const SettingModal = () => {
           <Flex as={ModalFooter} gap={5}>
             <Button
               colorScheme="red"
-              onClick={reset}
+              onClick={() => reset(initialValue)}
               variant="outline"
               isDisabled={!isDirty}
             >

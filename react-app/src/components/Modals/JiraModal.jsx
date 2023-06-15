@@ -22,23 +22,12 @@ import useJiraStore from "../../store/jiraStore";
 import useWorkLogsStore from "../../store/worklogsStore";
 import { getJiraWorklogsByDateRange } from "../../actions/jira";
 
-const extractBaseURLFromURL = (urlString) => {
-  try {
-    const url = new URL(urlString);
-    return url.origin;
-  } catch (error) {
-    return "";
-  }
-};
-
 const JiraModal = () => {
-  const { user } = useJiraStore();
+  const { user, organizationURL } = useJiraStore();
   const { addWorkLogs } = useWorkLogsStore();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [range, setRange] = useState(new Date());
-
-  const companyURL = extractBaseURLFromURL(user?.self);
 
   const handleSubmit = async () => {
     const startDate = format(range.from, "yyyy-MM-dd");
@@ -47,6 +36,7 @@ const JiraModal = () => {
     addWorkLogs(
       await getJiraWorklogsByDateRange(startDate, endDate, user?.accountId)
     );
+    onClose();
   };
 
   return (
@@ -75,18 +65,20 @@ const JiraModal = () => {
             p="20px 30px"
             borderBottom="1px solid"
             borderColor="gray.300"
+            mb="20px"
           >
-            Select range to export logs from Jira:{" "}
+            Select date range to export worklogs{" "}
           </ModalHeader>
           <ModalCloseButton />
 
           <Stack
             as={ModalBody}
             alignItems="center"
-            boxShadow="xl"
+            border="1px solid"
             width="fit-content"
             m="0 auto"
             borderRadius={5}
+            background="gray.50"
           >
             <DayPicker mode="range" selected={range} onSelect={setRange} />
             <Text m="0 auto">
@@ -94,17 +86,21 @@ const JiraModal = () => {
               <Link
                 color="blue.500"
                 fontSize="sm"
-                href={companyURL}
+                href={organizationURL}
                 target="_blank"
               >
-                ({companyURL})
+                ({organizationURL})
               </Link>
             </Text>
           </Stack>
 
           <ModalFooter>
-            <Button colorScheme="teal" onClick={handleSubmit}>
-              Submit
+            <Button
+              colorScheme="teal"
+              onClick={handleSubmit}
+              isDisabled={!range?.from || !range?.to}
+            >
+              Export worklogs
             </Button>
           </ModalFooter>
         </ModalContent>
