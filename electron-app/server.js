@@ -15,6 +15,4 @@ const server = () =>
     console.log(`Server started on port ${PORT}`);
   });
 
-server();
-
 module.exports = server;

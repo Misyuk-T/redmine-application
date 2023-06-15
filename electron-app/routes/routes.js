@@ -14,7 +14,7 @@ router
     try {
       const apiKeys = req.body;
       store.set("apiKeys", apiKeys);
-      res.status(200);
+      res.status(200).send();
     } catch (error) {
       console.error("Error while save settings: ", error);
       res.status(500).send(`Server error while save settings`);
