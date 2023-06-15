@@ -3,17 +3,9 @@ import { instance } from "./axios";
 import { parseDataFromJira } from "../helpers/parseDataFromJira";
 import groupByField from "../helpers/groupByField";
 
-const apiKey = process.env.REACT_APP_JIRA_KEY;
-const apiEmail = process.env.REACT_APP_JIRA_EMAIL;
-
 export const jiraLogin = async () => {
   try {
-    const response = await instance.get("/jira/rest/api/2/myself", {
-      headers: {
-        "X-Api-Key": apiKey,
-        "X-Api-Email": apiEmail,
-      },
-    });
+    const response = await instance.get("/jira/rest/api/2/myself");
 
     return response.data;
   } catch (error) {
@@ -35,10 +27,6 @@ export const getJiraWorklogsByDateRange = async (
         maxResults: 100,
         startAt: offset,
         fields: "summary,worklog,issuetype,parent,project,status,assignee",
-      },
-      headers: {
-        "X-Api-Key": apiKey,
-        "X-Api-Email": apiEmail,
       },
     });
 

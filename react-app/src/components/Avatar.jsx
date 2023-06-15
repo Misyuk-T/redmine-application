@@ -15,7 +15,15 @@ const Avatar = ({ title, user }) => {
   const connectedTitle = user ? "Connected to: " : "Disconnected: ";
 
   return (
-    <Flex gap={1} boxShadow="sm" p={1} w="100%" alignItems="center" bg="white">
+    <Flex
+      gap={1}
+      boxShadow="sm"
+      p={1}
+      w="100%"
+      alignItems="center"
+      bg="white"
+      borderRadius={5}
+    >
       <ChakraAvatar size="sm" name={userName} src={userImage}>
         <AvatarBadge
           borderColor="papayawhip"

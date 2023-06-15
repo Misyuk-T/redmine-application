@@ -23,7 +23,15 @@
       "target": "AppImage"
     }
   },
-  "keywords": ["electron", "react", "nodejs", "zustand", "axios", "redmine", "jira"],
+  "keywords": [
+    "electron",
+    "react",
+    "nodejs",
+    "zustand",
+    "axios",
+    "redmine",
+    "jira"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -33,5 +41,8 @@
   "devDependencies": {
     "electron": "^25.1.0",
     "electron-builder": "^23.6.0"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
   }
 }

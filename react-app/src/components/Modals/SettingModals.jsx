@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { DayPicker } from "react-day-picker";
-import { format } from "date-fns";
-
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import {
   Button,
+  Flex,
+  Image,
   Link,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -12,99 +13,186 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  OrderedList,
   Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
 import { UnlockIcon } from "@chakra-ui/icons";
 
-import useJiraStore from "../../store/jiraStore";
-import useWorkLogsStore from "../../store/worklogsStore";
-import { getJiraWorklogsByDateRange } from "../../actions/jira";
+import { getSettings, sendSettings } from "../../actions/settings";
+import SettingModalItem from "./SettingModalItem";
 
-const extractBaseURLFromURL = (urlString) => {
-  try {
-    const url = new URL(urlString);
-    return url.origin;
-  } catch (error) {
-    return "";
-  }
-};
+import RedmineApi from "../../assets/RedmineAPI.png";
+import JiraUserName from "../../assets/JiraUserName.png";
 
-const JiraModal = () => {
-  const { user } = useJiraStore();
-  const { addWorkLogs } = useWorkLogsStore();
+const fieldItems = [
+  {
+    name: "Redmine URL",
+    id: "redmineUrl",
+    leftAddon: "https://redmine.",
+    rightAddon: ".com",
+  },
+  {
+    name: "JIRA URL",
+    id: "jiraUrl",
+    leftAddon: "https://",
+    rightAddon: ".atlassian.net",
+  },
+  {
+    name: "Redmine API Key",
+    id: "redmineApiKey",
+    content: (
+      <OrderedList>
+        <ListItem>Open your redmine account</ListItem>
+        <ListItem>
+          On the top-right corner find show <strong>API access key</strong>
+        </ListItem>
+        <ListItem>Copy this key into field</ListItem>
+        <Image mt={5} src={RedmineApi} w="500px" h={300} />
+      </OrderedList>
+    ),
+    leftAddon: "",
+    rightAddon: "",
+  },
 
+  {
+    name: "JIRA API Key",
+    id: "jiraApiKey",
+    content: (
+      <OrderedList>
+        <ListItem>
+          Open next link:{" "}
+          <Link
+            href="https://id.atlassian.com/manage-profile/security/api-tokens"
+            target="_blank"
+            color="blue.500"
+          >
+            Generate Jira API key
+          </Link>
+        </ListItem>
+        <ListItem>Follow instruction to generate API key</ListItem>
+      </OrderedList>
+    ),
+    leftAddon: "",
+    rightAddon: "",
+  },
+  {
+    name: "JIRA Email",
+    id: "jiraEmail",
+    content: (
+      <OrderedList>
+        <ListItem>Atlassian account username</ListItem>
+        <Image mt={5} src={JiraUserName} w={300} h={300} />
+      </OrderedList>
+    ),
+    leftAddon: "",
+    rightAddon: "",
+  },
+];
+
+const SettingModal = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [range, setRange] = useState(new Date());
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm({
+    defaultValues: {},
+  });
 
-  const companyURL = extractBaseURLFromURL(user?.self);
-
-  const handleSubmit = async () => {
-    const startDate = format(range.from, "yyyy-MM-dd");
-    const endDate = format(range.to, "yyyy-MM-dd");
-
-    addWorkLogs(
-      await getJiraWorklogsByDateRange(startDate, endDate, user?.accountId)
-    );
+  const handleSaveApiKeys = async (data) => {
+    await sendSettings(data);
+    onClose();
   };
+
+  const fetchSettings = async () => {
+    await getSettings().then((data) => {
+      setValue("redmineUrl", data?.redmineUrl || "");
+      setValue("jiraUrl", data?.jiraUrl || "");
+      setValue("redmineApiKey", data?.redmineApiKey || "");
+      setValue("jiraApiKey", data?.jiraApiKey || "");
+      setValue("jiraEmail", data?.jiraEmail || "");
+    });
+  };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
   return (
     <>
       <Button
         display="flex"
         flexDirection="column"
-        aria-label="open modal"
         onClick={onOpen}
-        isDisabled={!user?.accountId}
         fontSize="xs"
         p={2}
         gap={1}
         colorScheme="orange"
+        boxShadow="xl"
       >
         <UnlockIcon />
-        <Text>API keys</Text>
+        <Text>Settings</Text>
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader w="100%" p="20px 30px 0 30px">
-            Select range to export logs from Jira:{" "}
+          <ModalHeader
+            w="100%"
+            p="20px 30px"
+            borderBottom="1px solid"
+            borderColor="gray.300"
+          >
+            Setting:
           </ModalHeader>
           <ModalCloseButton />
 
-          <Stack
-            as={ModalBody}
-            alignItems="center"
-            boxShadow="xl"
-            width="fit-content"
-            m="0 auto"
-            borderRadius={5}
-          >
-            <DayPicker mode="range" selected={range} onSelect={setRange} />
-            <Text m="0 auto">
-              Extract from:{" "}
-              <Link
-                color="blue.500"
-                fontSize="sm"
-                href={companyURL}
-                target="_blank"
-              >
-                ({companyURL})
-              </Link>
-            </Text>
-          </Stack>
+          <ModalBody>
+            <Stack spacing={4}>
+              {fieldItems.map(
+                ({ id, name, content, leftAddon, rightAddon }) => {
+                  return (
+                    <SettingModalItem
+                      key={id}
+                      id={id}
+                      name={name}
+                      register={register}
+                      leftAddon={leftAddon}
+                      rightAddon={rightAddon}
+                      errors={errors}
+                    >
+                      {content}
+                    </SettingModalItem>
+                  );
+                }
+              )}
+            </Stack>
+          </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme="teal" onClick={handleSubmit}>
+          <Flex as={ModalFooter} gap={5}>
+            <Button
+              colorScheme="red"
+              onClick={reset}
+              variant="outline"
+              isDisabled={!isDirty}
+            >
+              Reset
+            </Button>
+            <Button
+              colorScheme="teal"
+              onClick={handleSubmit(handleSaveApiKeys)}
+            >
               Submit
             </Button>
-          </ModalFooter>
+          </Flex>
         </ModalContent>
       </Modal>
     </>
   );
 };
 
-export default JiraModal;
+export default SettingModal;

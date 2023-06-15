@@ -61,6 +61,7 @@ const JiraModal = () => {
         p={2}
         gap={1}
         colorScheme="blue"
+        boxShadow="xl"
       >
         <CalendarIcon />
         <Text>Export Jira</Text>
@@ -69,7 +70,12 @@ const JiraModal = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader w="100%" p="20px 30px 0 30px">
+          <ModalHeader
+            w="100%"
+            p="20px 30px"
+            borderBottom="1px solid"
+            borderColor="gray.300"
+          >
             Select range to export logs from Jira:{" "}
           </ModalHeader>
           <ModalCloseButton />
