@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { ChakraProvider, Container, Flex, Stack } from "@chakra-ui/react";
+import { ToastContainer } from "react-toastify";
 
 import useRedmineStore from "./store/redmineStore";
 import useJiraStore from "./store/jiraStore";
@@ -82,6 +83,17 @@ const App = () => {
 
         <InformationTabs />
       </Container>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <BoxOverlay bgColor="blackAlpha.50" />
     </ChakraProvider>
   );

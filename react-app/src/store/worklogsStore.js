@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 
 const useWorkLogsStore = create((set, get) => ({
   workLogs: null,
-  error: "",
   addWorkLogs: (workLogs) => set({ workLogs }),
   resetWorkLogs: () => set({ workLogs: null }),
   addWorkLog: (date, data) => {
@@ -62,8 +61,6 @@ const useWorkLogsStore = create((set, get) => ({
       return { workLogs: oldState };
     });
   },
-  addWorkLogsError: (error) => set({ error }),
-  resetWorkLogsError: () => set({ error: "" }),
 }));
 
 export default useWorkLogsStore;

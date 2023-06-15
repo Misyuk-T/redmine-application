@@ -18,7 +18,7 @@ router
       res.status(200);
     } catch (error) {
       console.error("Error while connecting to Redmine: ", error);
-      res.status(500).send(`Server error while save settings: ${error}`);
+      res.status(500).send(`Server error while save settings`);
     }
   })
   .get("/settings", (req, res) => {
@@ -27,7 +27,7 @@ router
       res.status(200).send(savedApiKeys);
     } catch (error) {
       console.error("Error while connecting to Redmine: ", error);
-      res.status(500).send(`Server error while getting settings: ${error}`);
+      res.status(500).send(`Server error while getting settings`);
     }
   });
 
@@ -54,7 +54,7 @@ router.post("/submit-form", multer.single("file"), async (req, res) => {
       }
     } catch (error) {
       console.error("Error: ", error);
-      res.status(400).send(error.message);
+      res.status(500).send(`Error while parsing file on server: ${error}`);
     }
   });
 });
@@ -79,7 +79,7 @@ router.all("/redmine/*", async (req, res) => {
     res.send(response.data);
   } catch (error) {
     console.error("Error while connecting to Redmine: ", error);
-    res.status(500).send(`Internal server error: ${error}`);
+    res.status(500).send("Error while connecting to Redmine");
   }
 });
 
@@ -106,7 +106,7 @@ router.all("/jira/*", async (req, res) => {
     res.send(response.data);
   } catch (error) {
     console.error("Error while connecting to JIRA: ", error);
-    res.status(500).send(`Internal server error: ${error}`);
+    res.status(500).send("Error while connecting to JIRA");
   }
 });
 

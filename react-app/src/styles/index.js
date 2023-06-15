@@ -4,6 +4,7 @@ import "@fontsource/raleway/latin.css";
 import "@fontsource/open-sans/latin.css";
 
 import "react-day-picker/dist/style.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const theme = extendTheme({
   fonts: {
@@ -45,6 +46,10 @@ const theme = extendTheme({
       "*::-webkit-scrollbar-thumb": {
         background: "var(--chakra-colors-gray-500)",
         borderRadius: 5,
+      },
+
+      ".Toastify__toast-container": {
+        width: "450px",
       },
     },
   },
