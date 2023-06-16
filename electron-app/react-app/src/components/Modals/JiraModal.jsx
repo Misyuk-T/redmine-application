@@ -20,7 +20,7 @@ import { CalendarIcon } from "@chakra-ui/icons";
 
 import useJiraStore from "../../store/jiraStore";
 import useWorkLogsStore from "../../store/worklogsStore";
-import { getJiraWorklogsByDateRange } from "../../actions/jira";
+import { getJiraWorklogIssues } from "../../actions/jira";
 
 const JiraModal = () => {
   const { user, organizationURL } = useJiraStore();
@@ -34,7 +34,7 @@ const JiraModal = () => {
     const endDate = format(range.to, "yyyy-MM-dd");
 
     addWorkLogs(
-      await getJiraWorklogsByDateRange(startDate, endDate, user?.accountId)
+      await getJiraWorklogIssues(startDate, endDate, user?.accountId)
     );
     onClose();
   };

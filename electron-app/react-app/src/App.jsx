@@ -61,6 +61,7 @@ const App = () => {
         w="100%"
         pt={30}
         centerContent
+        gap="30px"
       >
         <Flex justifyContent="space-between" gap={5}>
           <Flex gap={5} w="90%">

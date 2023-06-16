@@ -1,7 +1,7 @@
 import { Controller } from "react-hook-form";
 import { Radio, RadioGroup as ChakraRadioGroup, Stack } from "@chakra-ui/react";
 
-const RadioGroup = ({ control }) => {
+const RadioGroup = ({ control, onToggle }) => {
   return (
     <Controller
       control={control}
@@ -14,7 +14,10 @@ const RadioGroup = ({ control }) => {
           name="type"
           defaultValue="custom"
           onBlur={onBlur}
-          onChange={onChange}
+          onChange={(value) => {
+              onChange(value)
+              onToggle(false)
+          }}
           ref={ref}
           value={value}
           gap={0}

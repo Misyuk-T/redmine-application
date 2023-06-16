@@ -20,6 +20,21 @@ import RadioGroup from "./RadioGroup";
 
 import { sendWorkLogs } from "../../actions/workLogs";
 
+const validateFiles = (value) => {
+  if (!value || value.length < 1) {
+    return "Files is required";
+  }
+  for (const file of Array.from(value)) {
+    const fsMb = file.size / (1024 * 1024);
+    const MAX_FILE_SIZE = 10;
+    if (fsMb > MAX_FILE_SIZE) {
+      return "Max file size 10mb";
+    }
+  }
+
+  return true;
+};
+
 const Form = () => {
   const { addWorkLogs, addWorkLogsError, resetWorkLogs } = useWorkLogsStore();
   const {
@@ -47,21 +62,6 @@ const Form = () => {
         addWorkLogsError(error);
       });
   });
-
-  const validateFiles = (value) => {
-    if (!value || value.length < 1) {
-      return "Files is required";
-    }
-    for (const file of Array.from(value)) {
-      const fsMb = file.size / (1024 * 1024);
-      const MAX_FILE_SIZE = 10;
-      if (fsMb > MAX_FILE_SIZE) {
-        return "Max file size 10mb";
-      }
-    }
-
-    return true;
-  };
 
   return (
     <Card
@@ -117,7 +117,7 @@ const Form = () => {
               <Text as={FormLabel} fontSize="md">
                 Choose file type:
               </Text>
-              <RadioGroup control={control} />
+              <RadioGroup control={control} onToggle={setIsSent}/>
 
               <Text as={FormErrorMessage} fontSize="md" color="tomato">
                 {errors?.type && errors.type.message}

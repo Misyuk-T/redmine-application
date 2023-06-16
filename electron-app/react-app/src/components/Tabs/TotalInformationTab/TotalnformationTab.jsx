@@ -1,8 +1,8 @@
-import { SimpleGrid, Stack, TabPanel, Text } from "@chakra-ui/react";
+import { Flex, Stack, TabPanel, Text } from "@chakra-ui/react";
 
 import useRedmineStore from "../../../store/redmineStore";
 
-import { getHours, getTotalHours } from "../../../helpers/getHours";
+import { getHours, getTotalHours, round } from "../../../helpers/getHours";
 import getProjectName from "../../../helpers/getProjectName";
 
 import RedmineForm from "./RedmineForm";
@@ -42,14 +42,19 @@ const mainLinkStyles = {
 const TotalInformationTab = ({ data }) => {
   const { projects } = useRedmineStore();
 
-  const columnNumber = data.length + 1;
   const totalPeriodHours = getTotalHours(data);
 
   return (
-    <TabPanel px={0}>
+    <TabPanel px={0} mr="40px">
       <Stack>
-        <SimpleGrid columns={columnNumber}>
-          <Stack justifyContent="center" gap={0} h="100%">
+        <Flex>
+          <Stack
+            justifyContent="center"
+            gap={0}
+            minW="120px"
+            alignSelf="stretch"
+            width="100%"
+          >
             <Text h="100%" {...mainLinkStyles}>
               Project:
             </Text>
@@ -60,7 +65,6 @@ const TotalInformationTab = ({ data }) => {
               Total by period:
             </Text>
           </Stack>
-
           {data.map(([_, logs], index) => {
             const { nblbHours, blbHours, totalHours } = getHours(logs);
             const totalTextColor = totalHours !== 8 ? "tomato" : "green";
@@ -68,13 +72,21 @@ const TotalInformationTab = ({ data }) => {
             const projectsByDay = getUniqueProjectIds(logs);
 
             return (
-              <Stack justifyContent="center" key={index} gap={0} h="100%">
+              <Stack
+                justifyContent="center"
+                key={index}
+                gap={0}
+                minW="81px"
+                w="100%"
+                alignSelf="stretch"
+              >
                 <Stack
                   justifyContent="center"
                   borderBottom="1px solid"
                   borderColor="gray"
-                  h="100%"
                   gap={0}
+                  minW="80px"
+                  h="100%"
                 >
                   {projectsByDay.length ? (
                     projectsByDay.map((item, index) => (
@@ -82,8 +94,9 @@ const TotalInformationTab = ({ data }) => {
                         key={index}
                         textAlign="center"
                         fontWeight={500}
-                        p={1}
                         fontSize="xs"
+                        p="15px 7px"
+                        h="100%"
                       >
                         {item === "undefined project"
                           ? item
@@ -109,16 +122,16 @@ const TotalInformationTab = ({ data }) => {
                   fontWeight={600}
                   color={totalTextColor}
                 >
-                  {totalHours}
+                  {round(totalHours)}
                 </Text>
                 <Text lineHeight={1} py={4} textAlign="center" fontWeight={700}>
-                  {isLastItem ? totalPeriodHours : "ㅤ"}
+                  {isLastItem ? round(totalPeriodHours) : "ㅤ"}
                 </Text>
                 )
               </Stack>
             );
           })}
-        </SimpleGrid>
+        </Flex>
 
         <RedmineForm />
       </Stack>

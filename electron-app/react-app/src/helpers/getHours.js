@@ -30,3 +30,28 @@ export const getTotalHours = (workLogs) => {
 
   return totalHours;
 };
+
+export const round = (number, decimalPlaces = 2) => {
+  const factor = 10 ** decimalPlaces;
+  return Math.round(number * factor) / factor;
+};
+
+export const parseTimeSpent = (timeSpent) => {
+  const hoursMatch = timeSpent.match(/(\d+)h/);
+  const minutesMatch = timeSpent.match(/(\d+)m/);
+
+  let hours = 0;
+  let minutes = 0;
+
+  if (hoursMatch) {
+    hours = parseInt(hoursMatch[1]);
+  }
+
+  if (minutesMatch) {
+    minutes = parseInt(minutesMatch[1]);
+  }
+
+  const totalHours = hours + minutes / 60;
+
+  return round(totalHours, 2); // Round to 2 decimal places
+};

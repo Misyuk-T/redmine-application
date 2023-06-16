@@ -1,4 +1,5 @@
 import { instance } from "./axios";
+import { endOfDay, startOfDay } from "date-fns";
 
 import { parseDataFromJira } from "../helpers/parseDataFromJira";
 import groupByField from "../helpers/groupByField";
@@ -13,40 +14,73 @@ export const jiraLogin = async () => {
   }
 };
 
-export const getJiraWorklogsByDateRange = async (
+export const getJiraWorklogIssues = async (
   startDate,
   endDate,
-  jiraUserId,
+  userId,
   offset = 0,
-  worklogs = []
+  prevIssues = []
 ) => {
   try {
     const response = await instance.get("/jira/rest/api/2/search", {
       params: {
-        jql: `worklogAuthor = currentUser() AND worklogDate >= '${startDate}' AND worklogDate <= '${endDate}'`,
+        jql: `worklogAuthor = '${userId}' AND worklogDate >= '${startDate}' AND worklogDate <= '${endDate}'`,
         maxResults: 100,
         startAt: offset,
         fields: "summary,worklog,issuetype,parent,project,status,assignee",
       },
     });
 
-    const formattedData = parseDataFromJira(response.data, jiraUserId);
-    const updatedWorklogs = [...worklogs, ...formattedData];
+    const issues = response.data.issues;
+    const updatedIssues = [...prevIssues, ...issues];
 
     if (response.data.total === 100) {
-      // Recursively call the function with the next page of results
-      return getJiraWorklogsByDateRange(
+      return getJiraWorklogIssues(
         startDate,
         endDate,
-        jiraUserId,
+        userId,
         offset + 100,
-        updatedWorklogs
+        updatedIssues
       );
     } else {
-      const sortedWorklogs = updatedWorklogs.sort(
-        (a, b) => new Date(a.date) - new Date(b.date)
-      );
-      return groupByField(sortedWorklogs, "date");
+      const startOfStartDate = startOfDay(new Date(startDate));
+      const endOfEndDate = endOfDay(new Date(endDate));
+
+      const startTimestamp = startOfStartDate.getTime();
+      const endTimestamp = endOfEndDate.getTime();
+
+      const workLogs = [];
+
+      const workLogPromises = updatedIssues.map(async (issue) => {
+        const issueKey = issue.key;
+
+        const workLogResponse = await instance.get(
+          `/jira/rest/api/2/issue/${issueKey}/worklog`,
+          {
+            params: {
+              authorAccountId: userId,
+              startedAfter: startTimestamp,
+              startedBefore: endTimestamp,
+            },
+          }
+        );
+
+        const workLogData = workLogResponse.data;
+
+        const workLogsForIssue = workLogData.worklogs
+          .filter((worklog) => worklog.author.accountId === userId)
+          .map((worklog) => ({
+            ...worklog,
+            task: issueKey,
+          }));
+
+        workLogs.push(...workLogsForIssue);
+      });
+
+      await Promise.all(workLogPromises);
+      const parsedData = parseDataFromJira(workLogs);
+
+      return groupByField(parsedData, "date");
     }
   } catch (error) {
     console.error("Error while fetching recent worklogs:", error);

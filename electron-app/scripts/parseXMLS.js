@@ -47,7 +47,7 @@ const getFormatWorksheetData = (worksheetData) => {
 };
 
 const parseXMLS = (file) => {
-  const workbook = XLSX.readFile(file);
+  const workbook = XLSX.read(file, { type: "buffer" });
   const sheetName = workbook.SheetNames[1];
   const worksheet = workbook.Sheets[sheetName];
   const worksheetData = XLSX.utils.sheet_to_json(worksheet);

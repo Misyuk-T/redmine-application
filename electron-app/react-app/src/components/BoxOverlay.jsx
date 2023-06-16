@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/react";
 
 const BoxOverlay = ({ bgColor, children, ...rest }) => (
   <Box
-    bg="red"
     sx={{
       position: "absolute",
     }}

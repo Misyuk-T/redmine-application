@@ -41,7 +41,7 @@ router.post("/submit-form", multer.single("file"), async (req, res) => {
 
   try {
     if ((isJiraFile && isXLSXFile) || (!isJiraFile && isTextFile)) {
-      const data = file.buffer.toString("utf8");
+      const data = isXLSXFile ? file.buffer : file.buffer.toString("utf8");
       const parsedResponse = isJiraFile ? parseXMLS(data) : parseText(data);
       res.send(parsedResponse);
     } else {
