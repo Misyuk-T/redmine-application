@@ -26,10 +26,10 @@ git clone https://github.com/Misyuk-T/redmine-application.git
 node --version && yarn --version
 ```
 
-3. Install dependency for electron app and react app
+3. Install dependency for electron app
 
 ```bash
-cd electron-app yarn install && cd react-app yarn install
+yarn install
 ```
 
 4. Build electron app inside electron-app folder with necessary flag: --win --mac or --linux

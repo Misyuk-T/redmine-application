@@ -1,9 +1,7 @@
-electron-app/node_modules
-electron-app/react-app/node_modules
-electron-app/react-app/build
+node_modules
+react-app/node_modules
 .idea
 .git
 machinet.conf
-electron-app/react-app/.env
-node_modules
+react-app/.env
 dist
