@@ -11,9 +11,8 @@
     "build": "electron-builder build"
   },
   "build": {
-    "extraResources": "nodejs",
     "win": {
-      "target": "portable"
+      "target": "nsis"
     },
     "mac": {
       "target": "dmg"
