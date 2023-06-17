@@ -63,7 +63,7 @@ export const getJiraWorklogIssues = async (
       const startOfStartDate = startOfDay(new Date(startDate));
       const endOfEndDate = endOfDay(new Date(endDate));
 
-      const startTimestamp = startOfStartDate.getTime();
+      const startTimestamp = startOfStartDate.getTime() - 1;
       const endTimestamp = endOfEndDate.getTime();
 
       const workLogs = [];
