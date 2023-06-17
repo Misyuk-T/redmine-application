@@ -174,7 +174,7 @@ const WorkLogItem = ({ data }) => {
           </Flex>
         </Flex>
 
-        <Stack mt={1}>
+        <Stack gap={0}>
           <Flex alignItems="center" w="100%">
             <Text m={0}>
               <strong>Project:</strong>{" "}
@@ -196,7 +196,7 @@ const WorkLogItem = ({ data }) => {
           )}
         </Stack>
 
-        <Flex alignItems="center" justifyContent="space-between" mt={2} h={8}>
+        <Flex alignItems="center" justifyContent="space-between" h={8}>
           <Controller
             name="blb"
             control={control}

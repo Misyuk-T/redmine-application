@@ -11,7 +11,7 @@ const HoursInput = ({ defaultValue, value, onChange, register }) => {
     <NumberInput
       defaultValue={defaultValue}
       value={value}
-      w="80px"
+      w="70px"
       min={0.25}
       max={8}
       step={0.25}
@@ -23,10 +23,13 @@ const HoursInput = ({ defaultValue, value, onChange, register }) => {
       }}
     >
       <NumberInputField
+        h="25px"
         register={register}
         cursor="pointer"
         border="none"
         pl="5px"
+        outlineOffset={0}
+        mb="1px"
         _focus={{
           opacity: "1",
           "& ~ div": {

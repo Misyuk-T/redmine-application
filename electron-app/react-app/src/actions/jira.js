@@ -1,5 +1,8 @@
-import { instance } from "./axios";
+import { Stack, Text } from "@chakra-ui/react";
+import { toast } from "react-toastify";
 import { endOfDay, startOfDay } from "date-fns";
+
+import { instance } from "./axios";
 
 import { parseDataFromJira } from "../helpers/parseDataFromJira";
 import groupByField from "../helpers/groupByField";
@@ -7,6 +10,20 @@ import groupByField from "../helpers/groupByField";
 export const jiraLogin = async () => {
   try {
     const response = await instance.get("/jira/rest/api/2/myself");
+
+    toast.success(
+      <Stack>
+        <Text fontWeight={600}>Successfully connected to jira</Text>
+      </Stack>,
+      {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
 
     return response.data;
   } catch (error) {

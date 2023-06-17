@@ -81,7 +81,6 @@ const InformationTabs = () => {
             className={styles.tabItem}
             bgColor="blackAlpha.50"
             fontWeight={600}
-            zIndex={100}
           >
             Total
           </Tab>

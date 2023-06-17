@@ -1,13 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
+const electron = require("electron");
 const path = require("path");
 const Store = require("electron-store");
 const server = require("./server");
-const electron = require("electron");
 
 const store = new Store();
 
 let mainWindow;
-
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
@@ -18,7 +17,7 @@ const createWindow = () => {
     },
   });
 
-  // store.clear()
+  store.clear();
 
   const apiKeys = store.get("apiKeys") || {};
 

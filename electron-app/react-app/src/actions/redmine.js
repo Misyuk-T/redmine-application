@@ -1,3 +1,6 @@
+import { Stack, Text } from "@chakra-ui/react";
+
+import { toast } from "react-toastify";
 import { instance } from "./axios";
 
 import { transformToRedmineData } from "../helpers/transformToRedmineData";
@@ -6,6 +9,20 @@ import { validateWorkLogsData } from "../helpers/validateWorklogsData";
 export const redmineLogin = async () => {
   try {
     const response = await instance.get(`/redmine/users/current.json`);
+
+    toast.success(
+      <Stack>
+        <Text fontWeight={600}>Successfully connected to redmine</Text>
+      </Stack>,
+      {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
 
     return response.data.user;
   } catch (error) {
@@ -79,12 +96,27 @@ export const trackTimeToRedmine = async (data) => {
     validateWorkLogsData(data);
     const redmineData = transformToRedmineData(data);
 
-    // Make a POST request for each entry in the redmineData array
     const requests = redmineData.map((entry) => {
       return instance.post(`/redmine/time_entries.json`, entry);
     });
 
-    await Promise.all(requests);
+    await Promise.all(requests).then(() => {
+      toast.success(
+        <Stack>
+          <Text fontWeight={600}>
+            Worklogs were successfully tracked to redmine
+          </Text>
+        </Stack>,
+        {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+    });
   } catch (error) {
     console.error("Error while tracking time:", error);
   }

@@ -82,7 +82,7 @@ const Form = () => {
         </Heading>
 
         <Flex alignItems="end" flexWrap="wrap" gap={5}>
-          <Flex gap={50}>
+          <Flex gap="35px">
             <FormControl
               as={Flex}
               flexDirection="column"
@@ -117,7 +117,7 @@ const Form = () => {
               <Text as={FormLabel} fontSize="md">
                 Choose file type:
               </Text>
-              <RadioGroup control={control} onToggle={setIsSent}/>
+              <RadioGroup control={control} onToggle={setIsSent} />
 
               <Text as={FormErrorMessage} fontSize="md" color="tomato">
                 {errors?.type && errors.type.message}

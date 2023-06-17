@@ -28,15 +28,18 @@ const JiraModal = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [range, setRange] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     const startDate = format(range.from, "yyyy-MM-dd");
     const endDate = format(range.to, "yyyy-MM-dd");
 
+    setIsLoading(true);
     addWorkLogs(
       await getJiraWorklogIssues(startDate, endDate, user?.accountId)
     );
     onClose();
+    setIsLoading(false);
   };
 
   return (
@@ -99,6 +102,8 @@ const JiraModal = () => {
               colorScheme="teal"
               onClick={handleSubmit}
               isDisabled={!range?.from || !range?.to}
+              isLoading={isLoading}
+              loadingText="Exporting..."
             >
               Export worklogs
             </Button>

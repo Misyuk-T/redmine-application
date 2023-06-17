@@ -100,12 +100,24 @@ const fieldItems = [
   },
 ];
 
+const getOrganizationUrls = (jiraOrganization, redmineOrganization) => {
+  const redmineUrl = redmineOrganization
+    ? `https://redmine.${redmineOrganization}.com`
+    : "";
+  const jiraUrl = jiraOrganization
+    ? `https://${jiraOrganization}.atlassian.net`
+    : "";
+
+  return { redmineUrl, jiraUrl };
+};
+
 const SettingModal = () => {
   const { addOrganizationURL, addUser, addProjects, addLatestActivity } =
     useRedmineStore();
   const { addOrganizationURL: setJiraUrl, addUser: addJiraUser } =
     useJiraStore();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [initialValue, setInitialValue] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -118,6 +130,16 @@ const SettingModal = () => {
     defaultValues: {},
   });
 
+  const saveOrganizationUrls = (jiraOrganization, redmineOrganization) => {
+    const { redmineUrl, jiraUrl } = getOrganizationUrls(
+      jiraOrganization,
+      redmineOrganization
+    );
+
+    addOrganizationURL(redmineUrl);
+    setJiraUrl(jiraUrl);
+  };
+
   const fetchRedmineUser = async () => {
     const user = await redmineLogin();
     addUser(user);
@@ -129,6 +151,7 @@ const SettingModal = () => {
   };
 
   const handleSaveApiKeys = async (data) => {
+    setIsLoading(true);
     await sendSettings(data).then(() => {
       fetchJiraUser().then();
       fetchRedmineUser().then(async (user) => {
@@ -136,7 +159,10 @@ const SettingModal = () => {
           addProjects(await getRedmineProjects(user.id));
           addLatestActivity(await getLatestRedmineWorkLogs(user.id));
         }
+
+        saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
         onClose();
+        setIsLoading(false);
       });
     });
   };
@@ -145,12 +171,6 @@ const SettingModal = () => {
     await getSettings().then((data) => {
       const jiraOrganization = data?.jiraUrl || "";
       const redmineOrganization = data?.redmineUrl || "";
-      const redmineUrl = redmineOrganization
-        ? `https://redmine.${redmineOrganization}.com`
-        : "";
-      const jiraUrl = jiraOrganization
-        ? `https://${jiraOrganization}.atlassian.net`
-        : "";
 
       setValue("redmineUrl", redmineOrganization);
       setValue("jiraUrl", jiraOrganization);
@@ -158,8 +178,7 @@ const SettingModal = () => {
       setValue("jiraApiKey", data?.jiraApiKey || "");
       setValue("jiraEmail", data?.jiraEmail || "");
 
-      addOrganizationURL(redmineUrl);
-      setJiraUrl(jiraUrl);
+      saveOrganizationUrls(jiraOrganization, redmineOrganization);
       setInitialValue(data);
     });
   };
@@ -231,6 +250,8 @@ const SettingModal = () => {
             <Button
               colorScheme="teal"
               onClick={handleSubmit(handleSaveApiKeys)}
+              isLoading={isLoading}
+              loadingText="Saving..."
             >
               Submit
             </Button>

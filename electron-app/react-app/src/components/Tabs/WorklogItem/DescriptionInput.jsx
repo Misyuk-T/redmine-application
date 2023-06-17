@@ -13,26 +13,30 @@ const DescriptionInput = ({
       defaultValue={defaultValue}
       value={value}
       w="100%"
+      fontSize="13px"
     >
       <EditablePreview
         fontWeight={600}
         w="100%"
         cursor="pointer"
         border="1px solid transparent"
-        minH="58px"
+        lineHeight={1.35}
+        minH="38px"
         borderColor={error ? "tomato" : "transparent"}
       />
       <EditableTextarea
-        h="52px"
+        h="38px"
         w="100%"
+        mt={1}
         fontWeight={600}
         fontFamily="Open sans"
         flexGrow={1}
         flexShrink={0}
-        fontSize={15}
         register={register}
         onChange={onChange}
         minLength={1}
+        fontSize="13px"
+        lineHeight={1.35}
       />
     </Editable>
   );
