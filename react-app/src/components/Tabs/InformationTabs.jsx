@@ -9,6 +9,7 @@ import { getCorrectGMTDateObject } from "../../helpers/getFormattedDate";
 import TotalInformationTab from "./TotalInformationTab/TotalnformationTab";
 import TabItem from "./TabItem";
 import BoxOverlay from "../BoxOverlay";
+import Footer from "../Footer";
 
 import styles from "./InformationTabs.module.scss";
 
@@ -66,7 +67,7 @@ const InformationTabs = () => {
         className={styles.informationTabs}
         variant="enclosed"
         isFitted
-        h="100%"
+        h="calc(100% - 21px)"
         overflowX="auto"
         overflowY="visible"
         ref={parentContainerRef}
@@ -133,6 +134,7 @@ const InformationTabs = () => {
         </TabPanels>
       </Tabs>
 
+      <Footer />
       <BoxOverlay
         bgColor="blackAlpha.50"
         height="calc(100% - 41px)"

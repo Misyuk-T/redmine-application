@@ -15,17 +15,19 @@ const theme = extendTheme({
   },
   styles: {
     global: {
-      body: {
-        display: "flex",
-        flex: "1 0 auto",
-        overflowX: "hidden",
-        height: "100%",
-      },
-
       html: {
         display: "flex",
         flexDirection: "column",
         minHeight: "100%",
+        overflowY: "scroll",
+
+        body: {
+          display: "flex",
+          flex: "1 0 auto",
+          overflowX: "hidden",
+          height: "100%",
+          marginRight: "0 !important",
+        },
       },
 
       "#root": {

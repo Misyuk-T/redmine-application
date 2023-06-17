@@ -11,6 +11,7 @@ import {
   Text,
   IconButton,
   Icon,
+  Box,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 
@@ -179,14 +180,18 @@ const WorkLogItem = ({ data }) => {
             <Text m={0}>
               <strong>Project:</strong>{" "}
             </Text>
-            <ProjectsSelect
-              value={watch("project") || getSelectValue(data.project, projects)}
-              control={control}
-              onChange={(project) => {
-                setValue("project", project);
-                setIsEdited(true);
-              }}
-            />
+            <Box width="300px">
+              <ProjectsSelect
+                value={
+                  watch("project") || getSelectValue(data.project, projects)
+                }
+                control={control}
+                onChange={(project) => {
+                  setValue("project", project);
+                  setIsEdited(true);
+                }}
+              />
+            </Box>
           </Flex>
 
           {data.task && (

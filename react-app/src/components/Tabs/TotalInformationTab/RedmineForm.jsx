@@ -20,6 +20,7 @@ const RedmineForm = () => {
   const [isProjectsSelected, setIsProjectsSelected] = useState(false);
   const [isBlbLog, setIsBlbLog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
 
   const formattedProjectData = transformToSelectData(projects);
   const isWorkLogsExist = workLogs && Object.entries(workLogs).length > 0;
@@ -27,6 +28,7 @@ const RedmineForm = () => {
   const handleAddProject = () => {
     addBulkWorkLogProject(selectedItem.value);
     setIsProjectsSelected(true);
+    setIsSubmit(false);
   };
 
   const handleBlbStatus = () => {
@@ -52,6 +54,7 @@ const RedmineForm = () => {
       addLatestActivity(await getLatestRedmineWorkLogs(user.id));
     });
     setIsLoading(false);
+    setIsSubmit(true);
   };
 
   return (
@@ -75,6 +78,7 @@ const RedmineForm = () => {
             onChange={setSelectedItem}
             options={formattedProjectData}
             placeholder="Select project ..."
+            menuPlacement="auto"
           />
         </Box>
 
@@ -91,7 +95,9 @@ const RedmineForm = () => {
 
       <Button
         onClick={handleSubmit}
-        isDisabled={!isProjectsSelected || !user?.id || !isWorkLogsExist}
+        isDisabled={
+          !isProjectsSelected || !user?.id || !isWorkLogsExist || isSubmit
+        }
         colorScheme="teal"
         size="md"
         isLoading={isLoading}

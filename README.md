@@ -26,13 +26,13 @@ git clone https://github.com/Misyuk-T/redmine-application.git
 node --version && yarn --version
 ```
 
-3. Install dependency for electron app
+3. Install dependency inside electron-app folder
 
 ```bash
 yarn install
 ```
 
-4. Build electron app inside electron-app folder with necessary flag: --win --mac or --linux
+4. Build electron app with necessary flag: --win --mac or --linux
 
 ```bash
 yarn build --mac

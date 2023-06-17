@@ -17,6 +17,7 @@ const ProjectsSelect = ({ onChange, control, value }) => {
           <Select
             {...field}
             value={value}
+            menuPlacement="auto"
             onChange={onChange}
             options={formattedProjectData}
             placeholder="Select project ..."
