@@ -26,7 +26,7 @@ git clone https://github.com/Misyuk-T/redmine-application.git
 node --version && yarn --version
 ```
 
-3. Install dependency inside electron-app folder
+3. Install dependency
 
 ```bash
 yarn install
