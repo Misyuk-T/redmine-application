@@ -9,13 +9,7 @@ const getFormattedDate = (date) => {
   const [day, month] = date.split(".");
   const currentYear = new Date().getFullYear();
 
-  return new Date(`${day}-${month}-${currentYear}`)
-    .toLocaleDateString("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
-    })
-    .replace(/\//g, "-");
+  return `${day}-${month}-${currentYear}`;
 };
 
 const parseText = (data) => {

@@ -30,7 +30,8 @@ const InformationTabs = () => {
   const pinDiv = fixedContainerRef?.current;
 
   const workLogsArray = workLogs ? Object.entries(workLogs) : [];
-  const sortedArray = getSortedByDate(workLogsArray);
+  const sortedArray =
+    workLogsArray.length > 0 ? getSortedByDate(workLogsArray) : workLogsArray;
   const lastDate = workLogsArray.length
     ? addDays(
         getCorrectGMTDateObject(workLogsArray[workLogsArray.length - 1][0]),

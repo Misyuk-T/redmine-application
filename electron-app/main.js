@@ -17,8 +17,6 @@ const createWindow = () => {
     },
   });
 
-  store.clear();
-
   const apiKeys = store.get("apiKeys") || {};
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
