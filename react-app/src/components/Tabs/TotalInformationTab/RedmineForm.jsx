@@ -62,7 +62,7 @@ const RedmineForm = () => {
       <Flex gap={5} alignItems="center">
         <Flex alignItems="center" mr={5}>
           <FormLabel htmlFor="blb" mb="0" fontWeight={400}>
-            BLB toggle
+            Billability toggle
           </FormLabel>
           <Switch
             id="blb"

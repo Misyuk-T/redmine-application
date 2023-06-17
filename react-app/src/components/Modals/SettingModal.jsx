@@ -58,7 +58,7 @@ const fieldItems = [
           On the top-right corner find show <strong>API access key</strong>
         </ListItem>
         <ListItem>Copy this key into field</ListItem>
-        <Image mt={5} src={RedmineApi} w="500px" h={300} />
+        <Image mt={5} src={RedmineApi} h={250} />
       </OrderedList>
     ),
     leftAddon: "",

@@ -1,5 +1,6 @@
 import { Controller } from "react-hook-form";
 import {
+  Box,
   Flex,
   IconButton,
   Image,
@@ -60,11 +61,19 @@ const radioItem = [
         <ListItem>
           <Text>Export worklogs as shown below.</Text>
         </ListItem>
-        <ListItem pt={5}>
-          <Image mx="auto" w={300} src={JiraAssistant0} />
-        </ListItem>
-        <ListItem pt={5}>
-          <Image mx="auto" w={300} src={JiraAssistant1} />
+        <ListItem>
+          <Flex gap={5}>
+            <Box>
+              Click on Worklog report btn
+              <Image mx="auto" w={250} src={JiraAssistant0} />
+            </Box>
+
+            <Box>
+              6. Adjust time range and click on export btn to export data as
+              .xmls
+              <Image mx="auto" w={400} src={JiraAssistant1} />
+            </Box>
+          </Flex>
         </ListItem>
       </OrderedList>
     ),
