@@ -76,7 +76,7 @@ const RedmineCard = () => {
           const totalHours = activities.reduce((acc, current) => {
             return acc + current.hours;
           }, 0);
-          const isValidHours = totalHours <= 8 && totalHours > 0;
+          const isValidHours = totalHours === 8;
           const isWorkLogInWeekend = isDayWeekend(date);
 
           return (

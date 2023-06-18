@@ -1,11 +1,8 @@
 {
   "files": {
     "main.css": "./static/css/main.ad2bf732.css",
-    "main.js": "./static/js/main.1cfb066f.js",
+    "main.js": "./static/js/main.95a3fef6.js",
     "static/js/787.cd28d1a5.chunk.js": "./static/js/787.cd28d1a5.chunk.js",
-    "static/media/JiraAssistant0.png": "./static/media/JiraAssistant0.a9e257b27e89696e0f43.png",
-    "static/media/JiraUserName.png": "./static/media/JiraUserName.5a01cc40450b4d4eb6a9.png",
-    "static/media/JiraAssistant1.png": "./static/media/JiraAssistant1.25e9f6f7c0dc9b8dacc4.png",
     "static/media/raleway-latin-600-normal.woff2": "./static/media/raleway-latin-600-normal.81d989fa5063ebf965a4.woff2",
     "static/media/raleway-latin-700-normal.woff2": "./static/media/raleway-latin-700-normal.bc3c769b66664fe6f48b.woff2",
     "static/media/raleway-latin-800-normal.woff2": "./static/media/raleway-latin-800-normal.ba3f0b7fc79d665ac76b.woff2",
@@ -37,13 +34,14 @@
     "static/media/open-sans-latin-800-normal.woff": "./static/media/open-sans-latin-800-normal.a4747e3ded054b25ef46.woff",
     "static/media/open-sans-latin-700-normal.woff": "./static/media/open-sans-latin-700-normal.e8d7b1cd94f932ef2d18.woff",
     "static/media/RedmineAPI.png": "./static/media/RedmineAPI.f029594d6ecb75d68f3a.png",
+    "static/media/JiraUserName.png": "./static/media/JiraUserName.5fffc017cb17224ae434.png",
     "index.html": "./index.html",
     "main.ad2bf732.css.map": "./static/css/main.ad2bf732.css.map",
-    "main.1cfb066f.js.map": "./static/js/main.1cfb066f.js.map",
+    "main.95a3fef6.js.map": "./static/js/main.95a3fef6.js.map",
     "787.cd28d1a5.chunk.js.map": "./static/js/787.cd28d1a5.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ad2bf732.css",
-    "static/js/main.1cfb066f.js"
+    "static/js/main.95a3fef6.js"
   ]
 }
