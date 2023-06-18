@@ -55,7 +55,7 @@ const SettingModalItem = ({
                   }}
                 />
               </PopoverTrigger>
-              <PopoverContent width="100%">
+              <PopoverContent width="100%" p={5}>
                 <PopoverArrow />
                 <PopoverCloseButton />
                 <PopoverHeader fontWeight={600} fontSize={18}>

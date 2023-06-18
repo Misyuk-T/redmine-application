@@ -36,7 +36,8 @@ const validateFiles = (value) => {
 };
 
 const Form = () => {
-  const { addWorkLogs, addWorkLogsError, resetWorkLogs } = useWorkLogsStore();
+  const { addWorkLogs, addWorkLogsError, resetWorkLogs, setIsJiraExport } =
+    useWorkLogsStore();
   const {
     register,
     handleSubmit,
@@ -49,6 +50,8 @@ const Form = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
+    const isJiraType = data.type === "jira";
+
     formData.append("file", data.file[0]);
     formData.append("type", data.type);
 
@@ -56,6 +59,7 @@ const Form = () => {
       .then((data) => {
         data && addWorkLogs(data);
         setIsSent(true);
+        setIsJiraExport(isJiraType);
       })
       .catch((error) => {
         console.error("Error: ", error);

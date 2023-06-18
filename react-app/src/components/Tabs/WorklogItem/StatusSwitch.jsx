@@ -5,9 +5,9 @@ const StatusSwitch = ({ value, onChange }) => {
 
   return (
     <Flex alignItems="center">
-      <FormLabel htmlFor="email-alerts" mb="0" w="100px" m={0} fontWeight={400}>
+      <FormLabel htmlFor="email-alerts" mb="0" w="120px" m={0} fontWeight={400}>
         <Text as="strong" display="inline-block" mr="2px">
-          Status:
+          Billability:
         </Text>{" "}
         {value}
       </FormLabel>

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const useWorkLogsStore = create((set, get) => ({
   workLogs: null,
+  isJiraExport: false,
   addWorkLogs: (workLogs) => set({ workLogs }),
   resetWorkLogs: () => set({ workLogs: null }),
   addWorkLog: (date, data) => {
@@ -61,6 +62,7 @@ const useWorkLogsStore = create((set, get) => ({
       return { workLogs: oldState };
     });
   },
+  setIsJiraExport: (isJiraExport) => set({ isJiraExport }),
 }));
 
 export default useWorkLogsStore;

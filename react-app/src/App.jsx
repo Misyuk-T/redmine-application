@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import useRedmineStore from "./store/redmineStore";
 import useJiraStore from "./store/jiraStore";
 
-import { jiraLogin } from "./actions/jira";
+import { getAssignedIssues, jiraLogin } from "./actions/jira";
 import {
   getLatestRedmineWorkLogs,
   getRedmineProjects,
@@ -23,7 +23,11 @@ import SettingModal from "./components/Modals/SettingModal";
 import theme from "./styles/index";
 
 const App = () => {
-  const { addUser: addJiraUser, user: jiraUser } = useJiraStore();
+  const {
+    addUser: addJiraUser,
+    user: jiraUser,
+    addAssignedIssues,
+  } = useJiraStore();
   const { addUser, addProjects, addLatestActivity, user } = useRedmineStore();
 
   const fetchRedmineUser = async () => {
@@ -33,11 +37,17 @@ const App = () => {
   };
 
   const fetchJiraUser = async () => {
-    addJiraUser(await jiraLogin());
+    const user = await jiraLogin();
+    addJiraUser(user);
+    return user;
   };
 
   useEffect(() => {
-    fetchJiraUser().then();
+    fetchJiraUser().then(async (user) => {
+      if (user) {
+        addAssignedIssues(await getAssignedIssues(user.accountId));
+      }
+    });
     fetchRedmineUser().then(async (user) => {
       if (user) {
         addProjects(await getRedmineProjects(user.id));

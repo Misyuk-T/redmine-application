@@ -24,7 +24,7 @@ const InformationTabs = () => {
   const parentContainerRef = useRef(null);
   const fixedContainerRef = useRef(null);
 
-  const { workLogs, addWorkLog } = useWorkLogsStore();
+  const { workLogs, addWorkLog, setIsJiraExport } = useWorkLogsStore();
   const [isScrollEnable, setIsScrollEnable] = useState(false);
 
   const container = parentContainerRef?.current;
@@ -50,6 +50,7 @@ const InformationTabs = () => {
       project: "",
       task: "",
     });
+    setIsJiraExport(false);
   };
 
   const handleScroll = () => {

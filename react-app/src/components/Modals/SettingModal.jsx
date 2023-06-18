@@ -58,7 +58,7 @@ const fieldItems = [
           On the top-right corner find show <strong>API access key</strong>
         </ListItem>
         <ListItem>Copy this key into field</ListItem>
-        <Image mt={5} src={RedmineApi} h={250} />
+        <Image mx="auto" border="1px solid" mt={5} src={RedmineApi} h={250} />
       </OrderedList>
     ),
     leftAddon: "",
@@ -92,7 +92,7 @@ const fieldItems = [
     content: (
       <OrderedList>
         <ListItem>Atlassian account username</ListItem>
-        <Image mt={5} src={JiraUserName} w={300} h={300} />
+        <Image mx="auto" border="1px solid" mt={5} src={JiraUserName} h={180} />
       </OrderedList>
     ),
     leftAddon: "",

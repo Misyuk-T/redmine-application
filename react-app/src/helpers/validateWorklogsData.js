@@ -1,11 +1,12 @@
-export const validateWorkLogsData = (data) => {
+export const validateWorkLogsData = (data, isJiraValidation) => {
   const mainKeys = Object.keys(data);
-  const [, firstKeyMonth, firstKeyYear] = mainKeys[0].split("-");
 
   // Validate date for e,pty data
   if (!data || !Object.keys(data).length) {
     throw new Error(`Data is empty.`);
   }
+
+  const [, firstKeyMonth, firstKeyYear] = mainKeys[0].split("-");
 
   // Validate date for items
   for (const key of mainKeys) {
@@ -29,9 +30,11 @@ export const validateWorkLogsData = (data) => {
       }
 
       // Validate if there is no empty description
-      if (!obj.description || !obj.project) {
+      if (!obj.description || (isJiraValidation ? !obj.task : !obj.project)) {
         throw new Error(
-          `Nested data for ${key} has an empty project or description.`
+          `Nested data for ${key} has an empty description or ${
+            isJiraValidation ? "task" : "project"
+          }.`
         );
       }
 

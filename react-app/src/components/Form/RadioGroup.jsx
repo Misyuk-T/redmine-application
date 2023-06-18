@@ -32,7 +32,10 @@ const radioItem = [
     helper: (
       <OrderedList p={5}>
         <ListItem>
-          <Text>Support export file from JiraAssistant chrome extension.</Text>
+          <Text>
+            Support export file from <strong>JiraAssistant</strong> chrome
+            extension.
+          </Text>
         </ListItem>
         <ListItem>
           <Text>
@@ -59,21 +62,24 @@ const radioItem = [
           <Text>Link to the required jira account.</Text>
         </ListItem>
         <ListItem>
-          <Text>Export worklogs as shown below.</Text>
+          Click on Worklog report btn
+          <Image
+            mx="auto"
+            mt={2}
+            w={300}
+            src={JiraAssistant0}
+            border="1px solid"
+          />
         </ListItem>
         <ListItem>
-          <Flex gap={5}>
-            <Box>
-              Click on Worklog report btn
-              <Image mx="auto" w={250} src={JiraAssistant0} />
-            </Box>
-
-            <Box>
-              6. Adjust time range and click on export btn to export data as
-              .xmls
-              <Image mx="auto" w={400} src={JiraAssistant1} />
-            </Box>
-          </Flex>
+          Adjust time range and click on export btn to export data as .xmls
+          <Image
+            mx="auto"
+            mt={2}
+            w={300}
+            src={JiraAssistant1}
+            border="1px solid"
+          />
         </ListItem>
       </OrderedList>
     ),
@@ -85,10 +91,9 @@ const radioItem = [
     helper: (
       <OrderedList p={5}>
         <ListItem>
-          <Text>Text file formatted as shown below</Text>
-        </ListItem>
-        <ListItem>
-          <Text as="div">
+          <Text mb={5}>Text file formatted as shown below:</Text>
+
+          <Text as="div" p={2} border="1px solid" borderRadius={3}>
             <Text fontWeight={600} mt={2}>
               12.06
             </Text>
@@ -107,23 +112,12 @@ const radioItem = [
             <pre />
             1. Delete unnecessary import React from react 0.5h blb
             <pre />
-            2. Replace slick carousel by react slick. Remove Slick carousel from
-            project adjust slider spacing 2h blb
+            2. Replace slick carousel by react slick 2h blb
             <pre />
             3. AFS-617: Adjust next.config.js to enable pages file with .page
-            ext. Change ext of all existing pages 1h blb
+            ext blb
             <pre />
-            4. AFS-617: Remove useTheme color in cases where it was possible
-            0.5h
-            <pre />
-            5. AFS-617: Adjust fonts, accessibility and addons in storybook 4h
-            <pre />
-            <Text fontWeight={600} mt={2}>
-              14.06
-            </Text>
-            <pre />
-            1. Working on custom redmine loger Node js + react + electron 8h
-            <pre />
+            ...
           </Text>
         </ListItem>
       </OrderedList>

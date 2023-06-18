@@ -24,7 +24,7 @@ import { getJiraWorklogIssues } from "../../actions/jira";
 
 const JiraModal = () => {
   const { user, organizationURL } = useJiraStore();
-  const { addWorkLogs } = useWorkLogsStore();
+  const { addWorkLogs, setIsJiraExport } = useWorkLogsStore();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [range, setRange] = useState(new Date());
@@ -38,6 +38,7 @@ const JiraModal = () => {
     addWorkLogs(
       await getJiraWorklogIssues(startDate, endDate, user?.accountId)
     );
+    setIsJiraExport(true);
     onClose();
     setIsLoading(false);
   };

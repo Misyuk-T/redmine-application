@@ -2,11 +2,13 @@ import { Controller } from "react-hook-form";
 import Select from "react-select";
 
 import useRedmineStore from "../../../store/redmineStore";
-import { transformToSelectData } from "../../../helpers/transformToSelectData";
+import { transformToProjectData } from "../../../helpers/transformToSelectData";
 
 const ProjectsSelect = ({ onChange, control, value }) => {
   const { projects } = useRedmineStore();
-  const formattedProjectData = transformToSelectData(projects);
+
+  const formattedProjectData = transformToProjectData(projects);
+  const isUndefinedValue = !value.value;
 
   return (
     <Controller
@@ -21,6 +23,7 @@ const ProjectsSelect = ({ onChange, control, value }) => {
             onChange={onChange}
             options={formattedProjectData}
             placeholder="Select project ..."
+            menuPortalTarget={document.body}
             styles={{
               control: (baseStyles, state) => ({
                 ...baseStyles,
@@ -36,6 +39,11 @@ const ProjectsSelect = ({ onChange, control, value }) => {
               container: (baseStyles) => ({
                 ...baseStyles,
                 width: "100%",
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: isUndefinedValue ? "tomato" : "black",
+                fontSize: "14px",
               }),
             }}
           />

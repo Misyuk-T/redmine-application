@@ -14,3 +14,8 @@ export const getCorrectGMTDateObject = (dateString) => {
 
   return new Date(year, month - 1, day);
 };
+
+export const formatDateForJira = (date) => {
+  const [day, month, year] = date.split("-");
+  return `${year}-${month}-${day}T00:00:00.000+0000`;
+};

@@ -4,7 +4,7 @@ import { isWeekend, parse } from "date-fns";
 
 import useRedmineStore from "../../store/redmineStore";
 import groupByField from "../../helpers/groupByField";
-import { debounce } from "../../helpers/debaunce";
+import { debounce } from "../../helpers/debounce";
 
 import RedmineCardItem from "./RedamineCardItem";
 

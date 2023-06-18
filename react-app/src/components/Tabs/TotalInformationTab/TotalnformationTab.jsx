@@ -67,7 +67,12 @@ const TotalInformationTab = ({ data }) => {
           </Stack>
           {data.map(([_, logs], index) => {
             const { nblbHours, blbHours, totalHours } = getHours(logs);
-            const totalTextColor = totalHours !== 8 ? "tomato" : "green";
+            const totalTextColor =
+              totalHours === 8
+                ? "green"
+                : totalHours > 8 || totalHours < 0
+                ? "red"
+                : "orange";
             const isLastItem = index === data.length - 1;
             const projectsByDay = getUniqueProjectIds(logs);
 
@@ -89,20 +94,24 @@ const TotalInformationTab = ({ data }) => {
                   h="100%"
                 >
                   {projectsByDay.length ? (
-                    projectsByDay.map((item, index) => (
-                      <Text
-                        key={index}
-                        textAlign="center"
-                        fontWeight={500}
-                        fontSize="xs"
-                        p="15px 7px"
-                        h="100%"
-                      >
-                        {item === "undefined project"
-                          ? item
-                          : getProjectName(item, projects)}
-                      </Text>
-                    ))
+                    projectsByDay.map((item, index) => {
+                      const hasUndefinedProject = item === "undefined project";
+                      return (
+                        <Text
+                          key={index}
+                          textAlign="center"
+                          fontWeight={500}
+                          fontSize="xs"
+                          my={1}
+                          h="100%"
+                          color={hasUndefinedProject ? "tomato" : "black"}
+                        >
+                          {hasUndefinedProject
+                            ? item
+                            : getProjectName(item, projects)}
+                        </Text>
+                      );
+                    })
                   ) : (
                     <Text
                       color="tomato"

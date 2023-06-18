@@ -31,6 +31,19 @@ export const getTotalHours = (workLogs) => {
   return totalHours;
 };
 
+export const getTotalHoursFromObject = (data) => {
+  let totalHours = 0;
+
+  for (const date in data) {
+    if (data.hasOwnProperty(date)) {
+      const entries = data[date];
+      totalHours += entries.reduce((sum, entry) => sum + entry.hours, 0);
+    }
+  }
+
+  return totalHours;
+};
+
 export const round = (number, decimalPlaces = 2) => {
   const factor = 10 ** decimalPlaces;
   return Math.round(number * factor) / factor;

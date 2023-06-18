@@ -15,19 +15,24 @@ import {
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 
+import useJiraStore from "../../../store/jiraStore";
 import useWorkLogsStore from "../../../store/worklogsStore";
 import useRedmineStore from "../../../store/redmineStore";
 import {
   getFormattedStringDate,
   getCorrectGMTDateObject,
 } from "../../../helpers/getFormattedDate";
-import { getSelectValue } from "../../../helpers/transformToSelectData";
+import {
+  getIssueValue,
+  getProjectValue,
+} from "../../../helpers/transformToSelectData";
 
 import DescriptionInput from "./DescriptionInput";
 import DatePicker from "./DatePicker";
 import HoursInput from "./HoursInput";
 import StatusSwitch from "./StatusSwitch";
 import ProjectsSelect from "./ProjectsSelect";
+import IssuesSelect from "./IssuesSelect";
 
 const handleNumbersValidate = (value) => {
   if (isNaN(value) || value > 8 || value <= 0) {
@@ -46,15 +51,17 @@ const handleTextValidate = (value) => {
 };
 
 const WorkLogItem = ({ data }) => {
+  const { projects } = useRedmineStore();
+  const { assignedIssues } = useJiraStore();
+  const { updateWorkLog, deleteWorkLog } = useWorkLogsStore();
+
   const defaultValues = {
     description: data.description,
     date: getCorrectGMTDateObject(data.date),
     hours: data.hours,
     blb: data.blb,
+    task: getIssueValue(data.task, assignedIssues),
   };
-
-  const { projects } = useRedmineStore();
-  const { updateWorkLog, deleteWorkLog } = useWorkLogsStore();
   const {
     handleSubmit,
     control,
@@ -83,7 +90,7 @@ const WorkLogItem = ({ data }) => {
   };
 
   const handleSave = (formData) => {
-    const { description, date, hours, blb, project } = formData;
+    const { description, date, hours, blb, project, task } = formData;
 
     const updatedData = {
       ...data,
@@ -92,6 +99,7 @@ const WorkLogItem = ({ data }) => {
       hours: hours || data.hours,
       blb: blb || data.blb,
       project: project?.value || "",
+      task: task?.value || "",
     };
 
     updateWorkLog(originDate.current, data.id, updatedData);
@@ -146,7 +154,7 @@ const WorkLogItem = ({ data }) => {
       </CardHeader>
 
       <CardBody as={Stack} gap={0} justifyContent="flex-end" p={0}>
-        <Flex alignItems="center">
+        <Flex alignItems="center" mb="6px">
           <DatePicker
             defaultValue={data.date}
             value={watch("date")}
@@ -183,7 +191,7 @@ const WorkLogItem = ({ data }) => {
             <Box width="300px">
               <ProjectsSelect
                 value={
-                  watch("project") || getSelectValue(data.project, projects)
+                  watch("project") || getProjectValue(data.project, projects)
                 }
                 control={control}
                 onChange={(project) => {
@@ -194,11 +202,23 @@ const WorkLogItem = ({ data }) => {
             </Box>
           </Flex>
 
-          {data.task && (
+          <Flex alignItems="center" w="100%">
             <Text m={0}>
-              <strong>Task:</strong> {data.task}
+              <strong>Task:</strong>{" "}
             </Text>
-          )}
+            <Box width="300px">
+              <IssuesSelect
+                value={
+                  watch("task") || getIssueValue(data.task, assignedIssues)
+                }
+                control={control}
+                onChange={(task) => {
+                  setValue("task", task);
+                  setIsEdited(true);
+                }}
+              />
+            </Box>
+          </Flex>
         </Stack>
 
         <Flex alignItems="center" justifyContent="space-between" h={8}>

@@ -93,31 +93,44 @@ export const getLatestRedmineWorkLogs = async (
 
 export const trackTimeToRedmine = async (data) => {
   try {
-    validateWorkLogsData(data);
+    validateWorkLogsData(data, false);
     const redmineData = transformToRedmineData(data);
 
     const requests = redmineData.map((entry) => {
       return instance.post(`/redmine/time_entries.json`, entry);
     });
 
-    await Promise.all(requests).then(() => {
-      toast.success(
-        <Stack>
-          <Text fontWeight={600}>
-            Worklogs were successfully tracked to redmine
-          </Text>
-        </Stack>,
-        {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        }
-      );
-    });
+    await Promise.all(requests);
+
+    toast.success(
+      <Stack>
+        <Text fontWeight={600}>
+          Worklogs were successfully tracked to redmine
+        </Text>
+      </Stack>,
+      {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
   } catch (error) {
+    toast.error(
+      <Stack>
+        <Text fontWeight={600}>Can`t submit due to error: {error.message}</Text>
+      </Stack>,
+      {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
     console.error("Error while tracking time:", error);
   }
 };

@@ -33,7 +33,8 @@ const RedmineCardItem = ({ activities, fontSize }) => {
 
                 <Text
                   fontSize={fontSize}
-                  color={blb === "blb" ? "green" : "tomato"}
+                  fontWeight={500}
+                  color={blb === "blb" ? "green" : "orange"}
                 >
                   ({blb})
                 </Text>

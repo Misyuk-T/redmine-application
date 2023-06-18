@@ -18,23 +18,23 @@ const DescriptionInput = ({
       <EditablePreview
         fontWeight={600}
         w="100%"
+        fontFamily="Raleway"
         cursor="pointer"
         border="1px solid transparent"
         lineHeight={1.35}
-        minH="38px"
+        minH="45px"
         borderColor={error ? "tomato" : "transparent"}
       />
       <EditableTextarea
-        h="38px"
+        h="45px"
         w="100%"
-        mt={1}
         fontWeight={600}
-        fontFamily="Open sans"
+        fontFamily="Raleway"
         flexGrow={1}
         flexShrink={0}
         register={register}
         onChange={onChange}
-        minLength={1}
+        minLength={1.1}
         fontSize="13px"
         lineHeight={1.35}
       />

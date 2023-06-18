@@ -12,12 +12,17 @@ import { AddIcon } from "@chakra-ui/icons";
 import useWorkLogsStore from "../../store/worklogsStore";
 
 import WorkLogItem from "./WorklogItem/WorkLogItem";
-import { calculateTotals } from "../../helpers/calculateTotals";
+import { getHours } from "../../helpers/getHours";
 
 const TabItem = forwardRef(({ dayLogs, date }, ref) => {
   const { addWorkLog } = useWorkLogsStore();
-  const { totalTime, blbTime, nblbTime } = calculateTotals(dayLogs);
-  const textColor = totalTime !== 8 ? "tomato" : "green";
+  const { totalHours, blbHours, nblbHours } = getHours(dayLogs);
+  const totalTextColor =
+    totalHours === 8
+      ? "green"
+      : totalHours > 8 || totalHours < 0
+      ? "red"
+      : "orange";
 
   const handleCreate = () => {
     addWorkLog(date, {
@@ -34,19 +39,19 @@ const TabItem = forwardRef(({ dayLogs, date }, ref) => {
     <TabPanel px={0} position="relative" pb="50px" overflowY="hidden">
       <Box left={0} w="100%" maxW="1152px" ref={ref}>
         <Flex gap={5}>
-          <Text color={textColor}>
+          <Text color={totalTextColor}>
             <Text as="span" fontWeight={700} color="black">
               Total time:{" "}
             </Text>
-            {totalTime}h
+            {totalHours}h
           </Text>
           <Text>
             <strong>blb: </strong>
-            {blbTime}h
+            {blbHours}h
           </Text>
           <Text>
             <strong>nblb: </strong>
-            {nblbTime}h
+            {nblbHours}h
           </Text>
         </Flex>
         <SimpleGrid
