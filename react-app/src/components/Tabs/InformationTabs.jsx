@@ -23,12 +23,14 @@ const getSortedByDate = (data) =>
 const InformationTabs = () => {
   const parentContainerRef = useRef(null);
   const fixedContainerRef = useRef(null);
+  const fixedActionsPanelRef = useRef(null);
 
   const { workLogs, addWorkLog, setIsJiraExport } = useWorkLogsStore();
   const [isScrollEnable, setIsScrollEnable] = useState(false);
 
   const container = parentContainerRef?.current;
   const pinDiv = fixedContainerRef?.current;
+  const pinActionsPanel = fixedActionsPanelRef?.current;
 
   const workLogsArray = workLogs ? Object.entries(workLogs) : [];
   const sortedArray =
@@ -58,6 +60,7 @@ const InformationTabs = () => {
       pinDiv.style.transform = `translateX(${container.scrollLeft}px)`;
     } else {
       pinDiv.style.transform = "none";
+      pinActionsPanel.style.transform = `translateX(${container.scrollLeft}px)`;
     }
   };
 
@@ -127,7 +130,10 @@ const InformationTabs = () => {
           position="relative"
           ref={fixedContainerRef}
         >
-          <TotalInformationTab data={workLogsArray} />
+          <TotalInformationTab
+            data={workLogsArray}
+            ref={fixedActionsPanelRef}
+          />
 
           {sortedArray.map(([date, logs]) => {
             return <TabItem key={date} dayLogs={logs} date={date} />;

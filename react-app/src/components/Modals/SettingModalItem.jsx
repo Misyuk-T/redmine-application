@@ -27,6 +27,7 @@ import {
   redmineLogin,
 } from "../../actions/redmine";
 import { jiraLogin } from "../../actions/jira";
+import { getOrganizationUrls } from "../../helpers/getOrganizationUrl";
 
 import SettingModalFieldItem from "./SettingModalFieldItem";
 
@@ -101,17 +102,6 @@ const fieldItems = [
     rightAddon: "",
   },
 ];
-
-const getOrganizationUrls = (jiraOrganization, redmineOrganization) => {
-  const redmineUrl = redmineOrganization
-    ? `https://redmine.${redmineOrganization}.com`
-    : "";
-  const jiraUrl = jiraOrganization
-    ? `https://${jiraOrganization}.atlassian.net`
-    : "";
-
-  return { redmineUrl, jiraUrl };
-};
 
 const SettingModalItem = ({ data, onDelete, isLastItem }) => {
   const { addOrganizationURL, addUser, addProjects, addLatestActivity } =

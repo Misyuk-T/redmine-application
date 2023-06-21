@@ -16,10 +16,14 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, StarIcon, UnlockIcon } from "@chakra-ui/icons";
 
+import useRedmineStore from "../../store/redmineStore";
+import useJiraStore from "../../store/jiraStore";
+import useSettingsStore from "../../store/settingsStore";
+
 import { getCurrentSettings, getSettings } from "../../actions/settings";
+import { getOrganizationUrls } from "../../helpers/getOrganizationUrl";
 
 import SettingModalItem from "./SettingModalItem";
-import useSettingsStore from "../../store/settingsStore";
 
 const defaultSetting = {
   presetName: "unnamed",
@@ -38,6 +42,8 @@ const SettingModal = () => {
     addCurrentSettings,
     currentSettings,
   } = useSettingsStore();
+  const { addOrganizationURL: setJiraUrl } = useJiraStore();
+  const { addOrganizationURL } = useRedmineStore();
 
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -49,6 +55,16 @@ const SettingModal = () => {
     updateSettings(defaultSetting);
   };
 
+  const saveOrganizationUrls = (jiraOrganization, redmineOrganization) => {
+    const { redmineUrl, jiraUrl } = getOrganizationUrls(
+      jiraOrganization,
+      redmineOrganization
+    );
+
+    addOrganizationURL(redmineUrl);
+    setJiraUrl(jiraUrl);
+  };
+
   const fetchSettings = async () => {
     await getSettings().then((data) => {
       addSettings(data);
@@ -56,6 +72,7 @@ const SettingModal = () => {
 
     await getCurrentSettings().then((data) => {
       addCurrentSettings(data);
+      saveOrganizationUrls(data.jiraUrl, data.redmineUrl);
     });
   };
 

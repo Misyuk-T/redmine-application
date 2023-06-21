@@ -59,7 +59,7 @@ export const getJiraWorklogIssues = async (
     const issues = response.data.issues;
     const updatedIssues = [...prevIssues, ...issues];
 
-    if (response.data.total === 100) {
+    if (issues.length === 100) {
       return getJiraWorklogIssues(
         startDate,
         endDate,
@@ -112,7 +112,11 @@ export const getJiraWorklogIssues = async (
   }
 };
 
-export const getAssignedIssues = async (userId) => {
+export const getAssignedIssues = async (
+  userId,
+  offset = 0,
+  prevIssues = []
+) => {
   try {
     const startDate = startOfMonth(new Date());
     const endDate = endOfMonth(new Date());
@@ -123,22 +127,30 @@ export const getAssignedIssues = async (userId) => {
           startDate,
           "yyyy-MM-dd"
         )}", "${format(endDate, "yyyy-MM-dd")} 23:59")`,
-        maxResults: 1000,
+        maxResults: 100,
+        startAt: offset,
         fields: "summary,issuetype,parent,project,status",
       },
     });
 
-    return [...response.data.issues].map((issue) => {
-      return {
-        id: issue.id,
-        key: issue.key,
-        summary: issue.fields.summary,
-        issueType: issue.fields.issuetype.name,
-        parent: issue.fields.parent ? issue.fields.parent.key : null,
-        project: issue.fields.project.name,
-        status: issue.fields.status.name,
-      };
-    });
+    const issues = response.data.issues;
+    const updatedIssues = [...prevIssues, ...issues];
+
+    if (issues.length === 100) {
+      return getAssignedIssues(userId, offset + 100, updatedIssues);
+    } else {
+      return updatedIssues.map((issue) => {
+        return {
+          id: issue.id,
+          key: issue.key,
+          summary: issue.fields.summary,
+          issueType: issue.fields.issuetype.name,
+          parent: issue.fields.parent ? issue.fields.parent.key : null,
+          project: issue.fields.project.name,
+          status: issue.fields.status.name,
+        };
+      });
+    }
   } catch (error) {
     console.error("Error while fetching assigned issues:", error);
   }

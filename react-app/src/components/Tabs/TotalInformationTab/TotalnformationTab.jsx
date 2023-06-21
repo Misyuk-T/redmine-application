@@ -1,4 +1,5 @@
-import { Flex, Stack, TabPanel, Text } from "@chakra-ui/react";
+import { forwardRef } from "react";
+import { Box, Flex, Stack, TabPanel, Text } from "@chakra-ui/react";
 
 import useRedmineStore from "../../../store/redmineStore";
 
@@ -39,7 +40,7 @@ const mainLinkStyles = {
   borderColor: "gray",
 };
 
-const TotalInformationTab = ({ data }) => {
+const TotalInformationTab = forwardRef(({ data }, ref) => {
   const { projects } = useRedmineStore();
 
   const totalPeriodHours = getTotalHours(data);
@@ -142,10 +143,12 @@ const TotalInformationTab = ({ data }) => {
           })}
         </Flex>
 
-        <RedmineForm />
+        <Box ref={ref}>
+          <RedmineForm />
+        </Box>
       </Stack>
     </TabPanel>
   );
-};
+});
 
 export default TotalInformationTab;
