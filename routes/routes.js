@@ -12,21 +12,64 @@ const store = new Store();
 router
   .post("/settings", (req, res) => {
     try {
-      const apiKeys = req.body;
-      store.set("apiKeys", apiKeys);
+      const newSettings = req.body;
+      const savedSettings = store.get("settings") || {};
+
+      // Merge new settings with existing settings
+      const updatedSettings = { ...savedSettings, ...newSettings };
+
+      store.set("settings", updatedSettings);
       res.status(200).send();
     } catch (error) {
-      console.error("Error while save settings: ", error);
-      res.status(500).send(`Server error while save settings`);
+      console.error("Error while saving settings: ", error);
+      res.status(500).send("Server error while saving settings");
     }
   })
   .get("/settings", (req, res) => {
     try {
-      const savedApiKeys = store.get("apiKeys");
-      res.status(200).send(savedApiKeys);
+      const savedSettings = store.get("settings") || {};
+      res.status(200).send(savedSettings);
+    } catch (error) {
+      console.error("Error while getting settings: ", error);
+      res.status(500).send("Server error while getting settings");
+    }
+  })
+  .delete("/settings/:id", (req, res) => {
+    try {
+      const id = req.params.id;
+      const savedSettings = store.get("settings") || {};
+
+      if (savedSettings.hasOwnProperty(id)) {
+        delete savedSettings[id];
+        store.set("settings", savedSettings);
+        res.status(200).send();
+      } else {
+        res.status(404).send("Settings were not found on server");
+      }
+    } catch (error) {
+      console.error("Error while deleting settings: ", error);
+      res.status(500).send("Server error while deleting settings");
+    }
+  });
+
+router
+  .post("/current-settings", (req, res) => {
+    try {
+      const currentSettings = req.body;
+      store.set("currentSettings", currentSettings);
+      res.status(200).send();
+    } catch (error) {
+      console.error("Error while save settings: ", error);
+      res.status(500).send(`Server error while save current settings`);
+    }
+  })
+  .get("/current-settings", (req, res) => {
+    try {
+      const savedCurrentSettings = store.get("currentSettings");
+      res.status(200).send(savedCurrentSettings);
     } catch (error) {
       console.error("Error while get settings: ", error);
-      res.status(500).send(`Server error while getting settings`);
+      res.status(500).send(`Server error while getting current settings`);
     }
   });
 
@@ -57,9 +100,9 @@ router.post("/submit-form", multer.single("file"), async (req, res) => {
 
 router.all("/redmine/*", async (req, res) => {
   try {
-    const savedApiKeys = store.get("apiKeys");
-    const redmineApiKey = savedApiKeys?.redmineApiKey;
-    const redmineOrganization = savedApiKeys?.redmineUrl;
+    const savedCurrentSettings = store.get("currentSettings");
+    const redmineApiKey = savedCurrentSettings?.redmineApiKey;
+    const redmineOrganization = savedCurrentSettings?.redmineUrl;
     const redmineURL = `https://redmine.${redmineOrganization}.com`;
     const url = `${redmineURL}${req.originalUrl.replace("/redmine", "")}`;
 
@@ -81,10 +124,10 @@ router.all("/redmine/*", async (req, res) => {
 
 router.all("/jira/*", async (req, res) => {
   try {
-    const savedApiKeys = store.get("apiKeys");
-    const jiraApiKey = savedApiKeys?.jiraApiKey;
-    const jiraOrganization = savedApiKeys?.jiraUrl;
-    const jiraLogin = savedApiKeys?.jiraEmail;
+    const savedCurrentSettings = store.get("currentSettings");
+    const jiraApiKey = savedCurrentSettings?.jiraApiKey;
+    const jiraOrganization = savedCurrentSettings?.jiraUrl;
+    const jiraLogin = savedCurrentSettings?.jiraEmail;
     const redmineURL = `https://${jiraOrganization}.atlassian.net`;
     const url = `${redmineURL}${req.originalUrl.replace("/jira", "")}`;
 

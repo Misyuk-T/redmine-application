@@ -1,90 +1,251 @@
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import {
-  Box,
+  Button,
   Flex,
-  FormLabel,
-  IconButton,
-  Input,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverContent,
-  PopoverHeader,
-  Popover,
-  PopoverTrigger,
-  PopoverArrow,
-  InputLeftAddon,
-  InputRightAddon,
-  InputGroup,
-  Text,
+  Image,
+  Link,
+  ListItem,
+  ModalFooter,
+  OrderedList,
+  SimpleGrid,
+  TabPanel,
 } from "@chakra-ui/react";
 
-import { InfoIcon } from "@chakra-ui/icons";
+import useRedmineStore from "../../store/redmineStore";
+import useJiraStore from "../../store/jiraStore";
+import useSettingsStore from "../../store/settingsStore";
 
-const SettingModalItem = ({
-  register,
-  name,
-  id,
-  children,
-  leftAddon,
-  rightAddon,
-  errors,
-}) => {
+import {
+  deleteSettings,
+  sendCurrentSettings,
+  sendSettings,
+} from "../../actions/settings";
+import {
+  getLatestRedmineWorkLogs,
+  getRedmineProjects,
+  redmineLogin,
+} from "../../actions/redmine";
+import { jiraLogin } from "../../actions/jira";
+
+import SettingModalFieldItem from "./SettingModalFieldItem";
+
+import RedmineApi from "../../assets/RedmineAPI.png";
+import JiraUserName from "../../assets/JiraUserName.png";
+
+const fieldItems = [
+  {
+    name: "Preset Name",
+    id: "presetName",
+  },
+  {
+    name: "JIRA Email",
+    id: "jiraEmail",
+    content: (
+      <OrderedList>
+        <ListItem>Atlassian account username</ListItem>
+        <Image mx="auto" border="1px solid" mt={5} src={JiraUserName} h={180} />
+      </OrderedList>
+    ),
+    leftAddon: "",
+    rightAddon: "",
+  },
+  {
+    name: "Redmine URL",
+    id: "redmineUrl",
+    leftAddon: "https://redmine.",
+    rightAddon: ".com",
+  },
+  {
+    name: "JIRA URL",
+    id: "jiraUrl",
+    leftAddon: "https://",
+    rightAddon: ".atlassian.net",
+  },
+  {
+    name: "Redmine API Key",
+    id: "redmineApiKey",
+    content: (
+      <OrderedList>
+        <ListItem>Open your redmine account</ListItem>
+        <ListItem>
+          On the top-right corner find show <strong>API access key</strong>
+        </ListItem>
+        <ListItem>Copy this key into field</ListItem>
+        <Image mx="auto" border="1px solid" mt={5} src={RedmineApi} h={250} />
+      </OrderedList>
+    ),
+    leftAddon: "",
+    rightAddon: "",
+  },
+
+  {
+    name: "JIRA API Key",
+    id: "jiraApiKey",
+    content: (
+      <OrderedList>
+        <ListItem>
+          Open next link:{" "}
+          <Link
+            href="https://id.atlassian.com/manage-profile/security/api-tokens"
+            target="_blank"
+            color="blue.500"
+          >
+            Generate Jira API key
+          </Link>
+        </ListItem>
+        <ListItem>Follow instruction to generate API key</ListItem>
+      </OrderedList>
+    ),
+    leftAddon: "",
+    rightAddon: "",
+  },
+];
+
+const getOrganizationUrls = (jiraOrganization, redmineOrganization) => {
+  const redmineUrl = redmineOrganization
+    ? `https://redmine.${redmineOrganization}.com`
+    : "";
+  const jiraUrl = jiraOrganization
+    ? `https://${jiraOrganization}.atlassian.net`
+    : "";
+
+  return { redmineUrl, jiraUrl };
+};
+
+const SettingModalItem = ({ data, onDelete, isLastItem }) => {
+  const { addOrganizationURL, addUser, addProjects, addLatestActivity } =
+    useRedmineStore();
+  const { addOrganizationURL: setJiraUrl, addUser: addJiraUser } =
+    useJiraStore();
+  const { deleteSetting, settings, updateSettings, addCurrentSettings } =
+    useSettingsStore();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {},
+  });
+
+  const handleDelete = async () => {
+    await deleteSettings(data.id);
+    onDelete();
+    deleteSetting(data.id);
+  };
+
+  const saveOrganizationUrls = (jiraOrganization, redmineOrganization) => {
+    const { redmineUrl, jiraUrl } = getOrganizationUrls(
+      jiraOrganization,
+      redmineOrganization
+    );
+
+    addOrganizationURL(redmineUrl);
+    setJiraUrl(jiraUrl);
+  };
+
+  const fetchRedmineUser = async () => {
+    const user = await redmineLogin();
+    addUser(user);
+    return user;
+  };
+
+  const fetchJiraUser = async () => {
+    addJiraUser(await jiraLogin());
+  };
+
+  const handleUseSetting = async (formData) => {
+    await sendCurrentSettings(formData).then(() => {
+      fetchJiraUser().then();
+      fetchRedmineUser().then(async (user) => {
+        if (user) {
+          addProjects(await getRedmineProjects(user.id));
+          addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+        }
+
+        addCurrentSettings(formData);
+        saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
+      });
+    });
+  };
+
+  const handleSaveSettings = async (formData) => {
+    const updatedSettings = {
+      ...settings,
+      [data.id]: formData,
+    };
+    setIsLoading(true);
+    updateSettings({ ...formData, id: data.id });
+
+    await sendSettings(updatedSettings);
+  };
+
+  const handleSaveAndUse = async () => {
+    setIsLoading(true);
+    const currentData = { ...getValues(), id: data.id };
+
+    await handleUseSetting(currentData);
+    await handleSaveSettings(currentData);
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    const redmineOrganization = data?.redmineUrl || "";
+    const jiraOrganization = data?.jiraUrl || "";
+
+    setValue("presetName", data?.presetName || "");
+    setValue("redmineUrl", redmineOrganization);
+    setValue("jiraUrl", jiraOrganization);
+    setValue("redmineApiKey", data?.redmineApiKey || "");
+    setValue("jiraApiKey", data?.jiraApiKey || "");
+    setValue("jiraEmail", data?.jiraEmail || "");
+  }, []);
+
   return (
-    <>
-      <Box>
-        <Flex alignItems="center">
-          <FormLabel m={0} htmlFor={id}>
-            {name}
-          </FormLabel>
+    <TabPanel>
+      <SimpleGrid templateColumns="repeat(2, 1fr)" gap={4}>
+        {fieldItems.map(({ id, name, content, leftAddon, rightAddon }) => {
+          return (
+            <SettingModalFieldItem
+              key={id}
+              id={id}
+              name={name}
+              register={register}
+              leftAddon={leftAddon}
+              rightAddon={rightAddon}
+              errors={errors}
+            >
+              {content}
+            </SettingModalFieldItem>
+          );
+        })}
+      </SimpleGrid>
 
-          {children && (
-            <Popover>
-              <PopoverTrigger>
-                <IconButton
-                  p={0}
-                  h="15px"
-                  w="10px"
-                  background="transparent"
-                  aria-label="helper popup"
-                  icon={<InfoIcon />}
-                  transition="all .3s"
-                  _hover={{
-                    background: "transparent",
-                    svg: {
-                      opacity: "0.5",
-                    },
-                  }}
-                />
-              </PopoverTrigger>
-              <PopoverContent width="100%" p={5}>
-                <PopoverArrow />
-                <PopoverCloseButton />
-                <PopoverHeader fontWeight={600} fontSize={18}>
-                  How to get:{" "}
-                </PopoverHeader>
-                <PopoverBody>{children}</PopoverBody>
-              </PopoverContent>
-            </Popover>
-          )}
-        </Flex>
+      <Flex as={ModalFooter} gap={5} px={0} pt={10}>
+        <Button
+          colorScheme="red"
+          onClick={handleDelete}
+          variant="outline"
+          isDisabled={isLastItem}
+        >
+          Delete
+        </Button>
 
-        <InputGroup size="sm">
-          {leftAddon && <InputLeftAddon children={leftAddon} />}
-          <Input
-            type="text"
-            id={id}
-            {...register(id, { required: true })}
-            isInvalid={errors[id]}
-          />
-          {rightAddon && <InputRightAddon children={rightAddon} />}
-        </InputGroup>
-
-        {errors[id] && (
-          <Text fontSize="sm" color="tomato">
-            This field is required.
-          </Text>
-        )}
-      </Box>
-    </>
+        <Button
+          colorScheme="teal"
+          onClick={handleSubmit(handleSaveAndUse)}
+          isLoading={isLoading}
+          loadingText="Saving..."
+        >
+          Save & Use
+        </Button>
+      </Flex>
+    </TabPanel>
   );
 };
 
