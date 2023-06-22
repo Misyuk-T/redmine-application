@@ -81,11 +81,11 @@ const SettingModal = () => {
   };
 
   useEffect(() => {
-    fetchSettings().then();
-
-    if (settingsArray.length === 0) {
-      handleAddNew();
-    }
+    fetchSettings().then(() => {
+      if (settingsArray.length === 0) {
+        handleAddNew();
+      }
+    });
   }, []);
 
   return (
@@ -127,17 +127,24 @@ const SettingModal = () => {
               }}
             >
               <TabList>
-                {settingsArray.map((item) => {
-                  const isCurrent = currentSettings?.id === item[1]?.id;
-                  return (
-                    <Tab key={item[1].presetName}>
-                      <Text whiteSpace="nowrap" fontWeight={600}>
-                        {item[1].presetName}
-                      </Text>
-                      {isCurrent && <StarIcon color="orange" ml={2} />}
-                    </Tab>
-                  );
-                })}
+                {settingsArray.length > 0 ? (
+                  settingsArray.map((item) => {
+                    const isCurrent = currentSettings?.id === item[1]?.id;
+                    return (
+                      <Tab key={item[1].presetName}>
+                        <Text whiteSpace="nowrap" fontWeight={600}>
+                          {item[1].presetName}
+                        </Text>
+                        {isCurrent && <StarIcon color="orange" ml={2} />}
+                      </Tab>
+                    );
+                  })
+                ) : (
+                  <Text fontSize="18px" fontWeight={600}>
+                    Please create settings with next btn to start using this
+                    application
+                  </Text>
+                )}
                 <Button
                   onClick={handleAddNew}
                   fontSize="xs"
