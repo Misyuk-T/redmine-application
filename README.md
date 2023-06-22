@@ -20,7 +20,7 @@ To install and run the Redmine Tracker application on your platform, follow thes
 git clone https://github.com/Misyuk-T/redmine-application.git
 ```
 
-2. Make sure that u have Node.js >= v18.0.0 and yarn >= v1.22.19
+2. Make sure that u have Node.js >= v16.0.0 and yarn >= v1.22.19
 
 ```bash
 node --version && yarn --version
