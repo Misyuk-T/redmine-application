@@ -17,15 +17,11 @@ import { DeleteIcon } from "@chakra-ui/icons";
 
 import useJiraStore from "../../../store/jiraStore";
 import useWorkLogsStore from "../../../store/worklogsStore";
-import useRedmineStore from "../../../store/redmineStore";
 import {
   getFormattedStringDate,
   getCorrectGMTDateObject,
 } from "../../../helpers/getFormattedDate";
-import {
-  getIssueValue,
-  getProjectValue,
-} from "../../../helpers/transformToSelectData";
+import { getIssueValue } from "../../../helpers/transformToSelectData";
 
 import DescriptionInput from "./DescriptionInput";
 import DatePicker from "./DatePicker";
@@ -51,17 +47,9 @@ const handleTextValidate = (value) => {
 };
 
 const WorkLogItem = ({ data }) => {
-  const { projects } = useRedmineStore();
   const { assignedIssues } = useJiraStore();
   const { updateWorkLog, deleteWorkLog } = useWorkLogsStore();
 
-  const defaultValues = {
-    description: data.description,
-    date: getCorrectGMTDateObject(data.date),
-    hours: data.hours,
-    blb: data.blb,
-    task: getIssueValue(data.task, assignedIssues),
-  };
   const {
     handleSubmit,
     control,
@@ -71,7 +59,14 @@ const WorkLogItem = ({ data }) => {
     register,
     formState: { errors, isValid },
   } = useForm({
-    defaultValues,
+    defaultValues: {
+      description: data.description,
+      date: getCorrectGMTDateObject(data.date),
+      project: data.project,
+      hours: data.hours,
+      blb: data.blb,
+      task: getIssueValue(data.task, assignedIssues),
+    },
   });
   const [isEdited, setIsEdited] = useState(false);
   const originDate = useRef(data.date);
@@ -85,7 +80,15 @@ const WorkLogItem = ({ data }) => {
     : "transparent";
 
   const handleCancel = () => {
-    reset(defaultValues);
+    console.log(data.project);
+    reset({
+      description: data.description,
+      date: getCorrectGMTDateObject(data.date),
+      project: data.project,
+      hours: data.hours,
+      blb: data.blb,
+      task: getIssueValue(data.task, assignedIssues),
+    });
     setIsEdited(false);
   };
 
@@ -98,7 +101,7 @@ const WorkLogItem = ({ data }) => {
       date: getFormattedStringDate(date),
       hours: hours || data.hours,
       blb: blb || data.blb,
-      project: project?.value || "",
+      project: project?.value || data.project,
       task: task?.value || "",
     };
 
@@ -190,9 +193,7 @@ const WorkLogItem = ({ data }) => {
             </Text>
             <Box width="300px">
               <ProjectsSelect
-                value={
-                  watch("project") || getProjectValue(data.project, projects)
-                }
+                value={watch("project") || data.project}
                 control={control}
                 onChange={(project) => {
                   setValue("project", project);

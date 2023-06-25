@@ -4,9 +4,10 @@ export const transformToRedmineData = (workLogs) => {
   for (const key in workLogs) {
     if (workLogs.hasOwnProperty(key)) {
       const currentDate = key.split("-").reverse().join("-");
-      const blb = workLogs[key][0].blb === "blb" ? "1" : "3";
 
       for (const item of workLogs[key]) {
+        const blb = item.blb === "blb" ? "1" : "3";
+
         const timeEntry = {
           time_entry: {
             hours: item.hours,

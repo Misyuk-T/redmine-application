@@ -2,13 +2,17 @@ import { Controller } from "react-hook-form";
 import Select from "react-select";
 
 import useRedmineStore from "../../../store/redmineStore";
-import { transformToProjectData } from "../../../helpers/transformToSelectData";
+import {
+  getProjectValue,
+  transformToProjectData,
+} from "../../../helpers/transformToSelectData";
 
 const ProjectsSelect = ({ onChange, control, value }) => {
   const { projects } = useRedmineStore();
 
   const formattedProjectData = transformToProjectData(projects);
-  const isUndefinedValue = !value.value;
+  const listValue = isNaN(value) ? value : getProjectValue(value, projects);
+  const isUndefinedValue = !listValue.value;
 
   return (
     <Controller
@@ -18,7 +22,7 @@ const ProjectsSelect = ({ onChange, control, value }) => {
         return (
           <Select
             {...field}
-            value={value}
+            value={listValue}
             menuPlacement="auto"
             onChange={onChange}
             options={formattedProjectData}
