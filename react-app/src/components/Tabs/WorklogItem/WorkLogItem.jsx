@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Button,
@@ -113,6 +113,10 @@ const WorkLogItem = ({ data }) => {
     deleteWorkLog(originDate.current, data.id);
   };
 
+  useEffect(() => {
+    setValue("blb", data.blb);
+  }, [data.blb]);
+
   return (
     <Card
       borderWidth="2px"
@@ -226,7 +230,7 @@ const WorkLogItem = ({ data }) => {
           <Controller
             name="blb"
             control={control}
-            defaultValue={data.blb}
+            // defaultValue={data.blb}
             render={({ field }) => {
               return (
                 <StatusSwitch

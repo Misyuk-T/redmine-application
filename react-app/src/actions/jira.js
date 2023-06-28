@@ -105,9 +105,41 @@ export const getJiraWorklogIssues = async (
       await Promise.all(workLogPromises);
       const parsedData = parseDataFromJira(workLogs);
 
+      toast.success(
+        <Stack>
+          <Text fontWeight={600}>
+            Jira worklogs were successfully fetched. Got ({parsedData.length})
+            items
+          </Text>
+        </Stack>,
+        {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+
       return groupByField(parsedData, "date");
     }
   } catch (error) {
+    toast.error(
+      <Stack>
+        <Text fontWeight={600}>
+          Can`t fetch jira woklogs due to error: {error.message}
+        </Text>
+      </Stack>,
+      {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
     console.error("Error while fetching recent worklogs:", error);
   }
 };

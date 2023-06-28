@@ -26,8 +26,7 @@ import {
   getRedmineProjects,
   redmineLogin,
 } from "../../actions/redmine";
-import { jiraLogin } from "../../actions/jira";
-import { getOrganizationUrls } from "../../helpers/getOrganizationUrl";
+import { getAssignedIssues, jiraLogin } from "../../actions/jira";
 
 import SettingModalFieldItem from "./SettingModalFieldItem";
 
@@ -103,11 +102,15 @@ const fieldItems = [
   },
 ];
 
-const SettingModalItem = ({ data, onDelete, isLastItem }) => {
-  const { addOrganizationURL, addUser, addProjects, addLatestActivity } =
-    useRedmineStore();
-  const { addOrganizationURL: setJiraUrl, addUser: addJiraUser } =
-    useJiraStore();
+const SettingModalItem = ({
+  data,
+  onDelete,
+  isLastItem,
+  saveOrganizationUrls,
+  fetchSettings,
+}) => {
+  const { addProjects, addLatestActivity, addUser } = useRedmineStore();
+  const { addUser: addJiraUser, addAssignedIssues } = useJiraStore();
   const { deleteSetting, settings, updateSettings, addCurrentSettings } =
     useSettingsStore();
 
@@ -128,16 +131,6 @@ const SettingModalItem = ({ data, onDelete, isLastItem }) => {
     deleteSetting(data.id);
   };
 
-  const saveOrganizationUrls = (jiraOrganization, redmineOrganization) => {
-    const { redmineUrl, jiraUrl } = getOrganizationUrls(
-      jiraOrganization,
-      redmineOrganization
-    );
-
-    addOrganizationURL(redmineUrl);
-    setJiraUrl(jiraUrl);
-  };
-
   const fetchRedmineUser = async () => {
     const user = await redmineLogin();
     addUser(user);
@@ -145,18 +138,25 @@ const SettingModalItem = ({ data, onDelete, isLastItem }) => {
   };
 
   const fetchJiraUser = async () => {
-    addJiraUser(await jiraLogin());
+    const user = await jiraLogin();
+    addJiraUser(user);
+    return user;
   };
 
   const handleUseSetting = async (formData) => {
     await sendCurrentSettings(formData).then(() => {
-      fetchJiraUser().then();
+      fetchJiraUser().then(async (user) => {
+        if (user) {
+          addAssignedIssues(await getAssignedIssues(user.accountId));
+        }
+      });
       fetchRedmineUser().then(async (user) => {
         if (user) {
           addProjects(await getRedmineProjects(user.id));
           addLatestActivity(await getLatestRedmineWorkLogs(user.id));
         }
 
+        fetchSettings();
         addCurrentSettings(formData);
         saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
       });

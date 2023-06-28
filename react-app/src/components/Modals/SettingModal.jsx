@@ -66,13 +66,14 @@ const SettingModal = () => {
   };
 
   const fetchSettings = async () => {
-    await getSettings().then((data) => {
-      addSettings(data);
-    });
-
     await getCurrentSettings().then((data) => {
       addCurrentSettings(data);
       saveOrganizationUrls(data.jiraUrl, data.redmineUrl);
+    });
+
+    return await getSettings().then((data) => {
+      addSettings(data);
+      return data;
     });
   };
 
@@ -81,8 +82,8 @@ const SettingModal = () => {
   };
 
   useEffect(() => {
-    fetchSettings().then(() => {
-      if (settingsArray.length === 0) {
+    fetchSettings().then((data) => {
+      if (!data || Object.entries(data).length === 0) {
         handleAddNew();
       }
     });
@@ -130,6 +131,7 @@ const SettingModal = () => {
                 {settingsArray.length > 0 ? (
                   settingsArray.map((item) => {
                     const isCurrent = currentSettings?.id === item[1]?.id;
+
                     return (
                       <Tab key={item[1].presetName}>
                         <Text whiteSpace="nowrap" fontWeight={600}>
@@ -145,6 +147,7 @@ const SettingModal = () => {
                     application
                   </Text>
                 )}
+
                 <Button
                   onClick={handleAddNew}
                   fontSize="xs"
@@ -163,6 +166,8 @@ const SettingModal = () => {
                       isLastItem={isLastItem}
                       onDelete={handleSetFirst}
                       key={item[1].id}
+                      fetchSettings={fetchSettings}
+                      saveOrganizationUrls={saveOrganizationUrls}
                     />
                   );
                 })}
