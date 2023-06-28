@@ -10,7 +10,13 @@ The application is available for Windows, macOS or Linux.
 - Tracks and manages tasks, issues, and projects.
 - Provides a user-friendly interface for interacting with the project management systems.
 
-## Use already builded application for your OS (find in builds folder) or install according to your requirments
+## Use already builded application for your Windows/Mac:
+
+1. Open builds folder and download file accordiong to your OS.
+ 
+2. Unarhive and install downloaded file.
+
+##  Or install according to your requirments:
 
 To install and run the Redmine Tracker application on your platform, follow these steps:
 
