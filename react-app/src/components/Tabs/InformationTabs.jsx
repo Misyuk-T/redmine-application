@@ -56,12 +56,14 @@ const InformationTabs = () => {
   };
 
   const handleScroll = () => {
-    if (container.scrollLeft > 0 && isScrollEnable) {
-      pinDiv.style.transform = `translateX(${container.scrollLeft}px)`;
-    } else {
-      pinDiv.style.transform = "none";
-      pinActionsPanel.style.transform = `translateX(${container.scrollLeft}px)`;
-    }
+    requestAnimationFrame(() => {
+      if (container.scrollLeft > 0 && isScrollEnable) {
+        pinDiv.style.transform = `translateX(${container.scrollLeft}px)`;
+      } else {
+        pinDiv.style.transform = "none";
+        pinActionsPanel.style.transform = `translateX(${container.scrollLeft}px)`;
+      }
+    });
   };
 
   return (
@@ -83,7 +85,7 @@ const InformationTabs = () => {
       >
         <TabList className={styles.tabsList}>
           <Tab
-            minW="120px"
+            minW="130px"
             className={styles.tabItem}
             bgColor="blackAlpha.50"
             fontWeight={600}
@@ -100,7 +102,7 @@ const InformationTabs = () => {
                 className={styles.tabItem}
                 bgColor="blackAlpha.50"
                 fontWeight={600}
-                minW="80px"
+                minW="90px"
               >
                 {`${month}-${day}`}
               </Tab>

@@ -14,6 +14,7 @@ const createWindow = () => {
     height: 1000,
     webPreferences: {
       nodeIntegration: true,
+      hardwareAcceleration: true,
     },
   });
 

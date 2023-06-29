@@ -52,7 +52,7 @@ const TotalInformationTab = forwardRef(({ data }, ref) => {
           <Stack
             justifyContent="center"
             gap={0}
-            minW="120px"
+            minW="131px"
             alignSelf="stretch"
             width="100%"
           >
@@ -82,7 +82,7 @@ const TotalInformationTab = forwardRef(({ data }, ref) => {
                 justifyContent="center"
                 key={index}
                 gap={0}
-                minW="81px"
+                minW="91px"
                 w="100%"
                 alignSelf="stretch"
               >
@@ -91,7 +91,7 @@ const TotalInformationTab = forwardRef(({ data }, ref) => {
                   borderBottom="1px solid"
                   borderColor="gray"
                   gap={0}
-                  minW="80px"
+                  minW="91px"
                   h="100%"
                 >
                   {projectsByDay.length ? (
