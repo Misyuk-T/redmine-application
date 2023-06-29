@@ -5,3 +5,4 @@ react-app/node_modules
 machinet.conf
 react-app/.env
 dist
+builds
