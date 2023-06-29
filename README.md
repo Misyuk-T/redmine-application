@@ -12,7 +12,8 @@ The application is available for Windows, macOS or Linux.
 
 ## Use already builded application for your Windows/Mac:
 
-1. Open builds folder and download file accordiong to your OS.
+1. Open builds folder on google drive and download file accordiong to your OS 
+https://drive.google.com/drive/folders/1GCbwj4CgdgjDnx6Ymo3wRZXMXSZgMIj0?usp=sharing
  
 2. Unarhive and install downloaded file.
 
