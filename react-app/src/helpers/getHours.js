@@ -50,11 +50,17 @@ export const round = (number, decimalPlaces = 2) => {
 };
 
 export const parseTimeSpent = (timeSpent) => {
+  const daysMatch = timeSpent.match(/(\d+)d/);
   const hoursMatch = timeSpent.match(/(\d+)h/);
   const minutesMatch = timeSpent.match(/(\d+)m/);
 
+  let days = 0;
   let hours = 0;
   let minutes = 0;
+
+  if (daysMatch) {
+    days = parseInt(daysMatch[1]);
+  }
 
   if (hoursMatch) {
     hours = parseInt(hoursMatch[1]);
@@ -64,7 +70,8 @@ export const parseTimeSpent = (timeSpent) => {
     minutes = parseInt(minutesMatch[1]);
   }
 
-  const totalHours = hours + minutes / 60;
+  const totalHours = days * 8 + hours + minutes / 60;
 
   return round(totalHours, 2); // Round to 2 decimal places
 };
+
