@@ -105,7 +105,7 @@ const RedmineForm = () => {
           headerTitle="Submitting to Jira"
           trigger={
             <Button
-              isDisabled={!jiraUser || !isWorkLogsExist || isJiraExport}
+              isDisabled={!jiraUser || !isWorkLogsExist}
               colorScheme="blue"
               size="md"
             >

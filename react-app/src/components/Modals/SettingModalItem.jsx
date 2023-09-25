@@ -59,8 +59,7 @@ const fieldItems = [
   {
     name: "JIRA URL",
     id: "jiraUrl",
-    leftAddon: "https://",
-    rightAddon: ".atlassian.net",
+    leftAddon: "https://"
   },
   {
     name: "Redmine API Key",
