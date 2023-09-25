@@ -44,3 +44,15 @@ yarn install
 ```bash
 yarn build --mac
 ```
+
+5. Run app
+```bash
+yarn electron
+```
+
+# Troubleshoot
+
+### `yarn` is not installed  
+```bash
+npm i --global yarn
+```
