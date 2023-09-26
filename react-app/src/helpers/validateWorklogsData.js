@@ -45,11 +45,11 @@ export const validateWorkLogsData = (data, isJiraValidation) => {
         );
       }
 
-      // Validate if total hours for the whole array is less than 8
-      const totalHours = data[key].reduce((sum, item) => sum + item.hours, 0);
-      if (totalHours > 8) {
-        throw new Error(`Total hours for ${key} exceed 8 hours.`);
-      }
+      // Validate if total hours for the whole array is more than 8
+      // const totalHours = data[key].reduce((sum, item) => sum + item.hours, 0);
+      // if (totalHours > 8) {
+      //   throw new Error(`Total hours for ${key} exceed 8 hours.`);
+      // }
     }
   }
 
