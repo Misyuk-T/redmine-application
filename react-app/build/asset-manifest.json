@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "./static/css/main.6c42824e.css",
-    "main.js": "./static/js/main.0e07ca46.js",
+    "main.js": "./static/js/main.81facc8a.js",
     "static/js/787.cd28d1a5.chunk.js": "./static/js/787.cd28d1a5.chunk.js",
     "static/media/raleway-latin-600-normal.woff2": "./static/media/raleway-latin-600-normal.81d989fa5063ebf965a4.woff2",
     "static/media/raleway-latin-700-normal.woff2": "./static/media/raleway-latin-700-normal.bc3c769b66664fe6f48b.woff2",
@@ -37,11 +37,11 @@
     "static/media/JiraUserName.png": "./static/media/JiraUserName.5fffc017cb17224ae434.png",
     "index.html": "./index.html",
     "main.6c42824e.css.map": "./static/css/main.6c42824e.css.map",
-    "main.0e07ca46.js.map": "./static/js/main.0e07ca46.js.map",
+    "main.81facc8a.js.map": "./static/js/main.81facc8a.js.map",
     "787.cd28d1a5.chunk.js.map": "./static/js/787.cd28d1a5.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6c42824e.css",
-    "static/js/main.0e07ca46.js"
+    "static/js/main.81facc8a.js"
   ]
 }

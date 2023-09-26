@@ -80,7 +80,6 @@ const WorkLogItem = ({ data }) => {
     : "transparent";
 
   const handleCancel = () => {
-    console.log(data.project);
     reset({
       description: data.description,
       date: getCorrectGMTDateObject(data.date),
@@ -99,7 +98,7 @@ const WorkLogItem = ({ data }) => {
       ...data,
       description: description || data.description,
       date: getFormattedStringDate(date),
-      hours: hours || data.hours,
+      hours: +hours || +data.hours,
       blb: blb || data.blb,
       project: project?.value || data.project,
       task: task?.value || "",
