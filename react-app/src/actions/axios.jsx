@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { Stack, Text } from "@chakra-ui/react";
 
 export const instance = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://redmine-logger-app.onrender.com",
 });
 
 instance.interceptors.response.use(null, (error) => {
