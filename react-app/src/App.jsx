@@ -1,11 +1,5 @@
 import { useEffect } from "react";
-import {
-  Button,
-  ChakraProvider,
-  Container,
-  Flex,
-  Stack,
-} from "@chakra-ui/react";
+import { ChakraProvider, Container, Flex, Stack } from "@chakra-ui/react";
 import { ToastContainer } from "react-toastify";
 
 import useRedmineStore from "./store/redmineStore";
@@ -25,9 +19,11 @@ import RedmineCard from "./components/RedmineCard/RedmineCard";
 import JiraModal from "./components/Modals/JiraModal";
 import Avatar from "./components/Avatar";
 import SettingModal from "./components/Modals/SettingModal";
+import ServicesStatus from "./components/ServicesStatus";
+import Loader from "./components/Loader";
 
 import theme from "./styles/index";
-import { observeAuth, openLoginPopup } from "./actions/auth";
+import { observeAuth } from "./actions/auth";
 import useAuthStore from "./store/userStore";
 
 const App = () => {
@@ -37,7 +33,7 @@ const App = () => {
     addAssignedIssues,
   } = useJiraStore();
   const { addUser, addProjects, addLatestActivity, user } = useRedmineStore();
-  const { isAuthObserve } = useAuthStore();
+  const { isAuthObserve, user: googleUser, isLoading } = useAuthStore();
 
   const fetchRedmineUser = async () => {
     const user = await redmineLogin();
@@ -59,22 +55,23 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    fetchJiraUser().then(async (user) => {
-      if (user) {
-        addAssignedIssues(await getAssignedIssues(user.accountId));
-      }
-    });
-    fetchRedmineUser().then(async (user) => {
-      if (user) {
-        addProjects(await getRedmineProjects(user.id));
-        addLatestActivity(await getLatestRedmineWorkLogs(user.id));
-      }
-    });
-  }, []);
+    if (googleUser) {
+      fetchJiraUser().then(async (user) => {
+        if (user) {
+          addAssignedIssues(await getAssignedIssues(user.accountId));
+        }
+      });
+      fetchRedmineUser().then(async (user) => {
+        if (user) {
+          addProjects(await getRedmineProjects(user.id));
+          addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+        }
+      });
+    }
+  }, [googleUser]);
 
   return (
     <ChakraProvider theme={theme} resetCSS>
-      <Button onClick={() => openLoginPopup()}>click</Button>
       <Container
         as={Flex}
         position="relative"
@@ -91,18 +88,32 @@ const App = () => {
         gap="30px"
       >
         <Flex justifyContent="space-between" gap={5}>
-          <Flex gap={5} w="90%">
+          <Flex gap={5} w="80%" justifyContent="space-between">
             <RedmineCard />
             <Form />
           </Flex>
 
-          <Stack justifyContent="space-between" maxH="152px">
+          <Stack
+            justifyContent="space-between"
+            maxH="152px"
+            maxW="210px"
+            flexGrow={1}
+          >
             <Stack>
-              <Avatar title="redmine" user={user} />
-              <Avatar title="jira" user={jiraUser} />
+              <Avatar user={googleUser} />
+
+              <Stack boxShadow="sm" p={1} w="100%" bg="white" borderRadius={6}>
+                <ServicesStatus title="redmine" user={user} />
+                <ServicesStatus title="jira" user={jiraUser} />
+              </Stack>
             </Stack>
 
-            <Flex gap={2} alignSelf="flex-start">
+            <Flex
+              gap={1}
+              alignSelf="flex-start"
+              justifyContent="space-between"
+              w="100%"
+            >
               <SettingModal />
               <JiraModal />
             </Flex>
@@ -110,6 +121,7 @@ const App = () => {
         </Flex>
 
         <InformationTabs />
+        <Loader isVisible={isLoading} isFixed />
       </Container>
       <ToastContainer
         position="bottom-center"

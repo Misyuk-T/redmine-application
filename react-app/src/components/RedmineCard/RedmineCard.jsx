@@ -58,8 +58,8 @@ const RedmineCard = () => {
       boxShadow="md"
       backgroundColor="white"
       overflow="auto"
-      w="50%"
-      minW="50%"
+      w="53%"
+      minW="53%"
       maxW="650px"
       maxH="500px"
       resize="both"
@@ -68,7 +68,7 @@ const RedmineCard = () => {
       ref={containerRef}
     >
       <Heading size="md" mb={2} w="100%">
-        Latest Activity
+        Latest Activity:
       </Heading>
 
       {groupedByDateArray.length ? (

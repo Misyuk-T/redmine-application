@@ -33,6 +33,7 @@ export const openLoginPopup = async () => {
 
 export const loginUser = async (googleUserData) => {
   try {
+    useAuthStore.setState({ isLoading: true });
     const { displayName, email, photoURL, uid } = googleUserData;
     const userData = {
       name: displayName,
@@ -64,21 +65,27 @@ export const loginUser = async (googleUserData) => {
     useAuthStore.setState({ user: existingUserData });
   } catch (err) {
     console.error(err);
+  } finally {
+    useAuthStore.setState({ isLoading: false });
   }
 };
 
 export const logoutUser = async () => {
-  await signOut(auth).then(() => {
-    useAuthStore.setState({ isAuthObserve: true });
-  });
+  try {
+    useAuthStore.setState({ isLoading: true });
+    useAuthStore.setState({ user: null });
+    await signOut(auth);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    useAuthStore.setState({ isLoading: false });
+  }
 };
 
 export const observeAuth = () => {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       await loginUser(user);
-    } else {
-      await logoutUser();
     }
   });
 };

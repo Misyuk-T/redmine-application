@@ -4,61 +4,57 @@ import {
   Text,
   Avatar as ChakraAvatar,
   Flex,
-  LinkOverlay,
-  LinkBox,
+  Button,
+  Box,
 } from "@chakra-ui/react";
+import { logoutUser, openLoginPopup } from "../actions/auth";
 
-import useRedmineStore from "../store/redmineStore";
-import useJiraStore from "../store/jiraStore";
-
-const Avatar = ({ title, user }) => {
-  const { organizationURL } = useRedmineStore();
-  const { organizationURL: jiraUrl } = useJiraStore();
-
-  const isJiraUser = title === "jira";
-  const userName = isJiraUser
-    ? user?.displayName
-    : `${user?.firstname} ${user?.lastname}`;
-  const userImage = isJiraUser ? user?.avatarUrls["48x48"] : user?.avatar_url;
-  const connectedTitle = user ? "Connected to: " : "Disconnected: ";
-  const avatarUrl = isJiraUser ? jiraUrl : organizationURL;
+const Avatar = ({ user }) => {
+  const handleClick = async () => {
+    if (user) {
+      await logoutUser();
+    } else {
+      await openLoginPopup();
+    }
+  };
 
   return (
-    <Flex
-      as={LinkBox}
-      gap={1}
-      boxShadow="sm"
-      p={1}
-      w="100%"
-      alignItems="center"
-      bg="white"
-      borderRadius={5}
-    >
-      <ChakraAvatar size="sm" name={userName} src={userImage}>
-        <AvatarBadge
-          borderColor="papayawhip"
-          boxSize="1em"
-          bg={user ? "green.500" : "tomato"}
-        />
-      </ChakraAvatar>
+    <Flex gap="10px">
+      <Flex
+        gap={1}
+        boxShadow="sm"
+        p={1}
+        w="100%"
+        alignItems="center"
+        bg="white"
+        borderRadius={5}
+      >
+        <ChakraAvatar size="sm" name={user?.name || "name"} src={user?.photo}>
+          <AvatarBadge
+            borderColor="papayawhip"
+            boxSize="1em"
+            bg={user ? "green.500" : "tomato"}
+          />
+        </ChakraAvatar>
 
-      <Stack alignItems="center" gap={0} w="100%">
-        <Text fontSize="xs" fontWeight={700} textAlign="center">
-          {connectedTitle}
-        </Text>
-
-        <LinkOverlay
-          fontSize="xs"
-          textAlign="center"
-          href={avatarUrl}
-          target="_blank"
-          _hover={{
-            textDecoration: "underline",
-          }}
+        <Stack alignItems="center" gap={0} w="100%">
+          <Text fontSize="xs" fontWeight={700} textAlign="center">
+            {user ? user.name : "Login to continue"}
+          </Text>
+        </Stack>
+      </Flex>
+      <Box>
+        <Button
+          onClick={handleClick}
+          boxShadow="sm"
+          size="sm"
+          height="100%"
+          colorScheme={user ? "red" : "teal"}
+          opacity={0.8}
         >
-          {title}
-        </LinkOverlay>
-      </Stack>
+          {user ? "Logout" : "Login"}
+        </Button>
+      </Box>
     </Flex>
   );
 };

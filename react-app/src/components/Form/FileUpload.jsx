@@ -52,8 +52,10 @@ const FileUpload = ({ register, accept, multiple, onReset }) => {
         </Button>
       ) : (
         <Button
-          w={146}
+          w={110}
           border="1px solid black"
+          fontSize="13px"
+          h="30px"
           leftIcon={<Icon as={AttachmentIcon} />}
         >
           Upload File

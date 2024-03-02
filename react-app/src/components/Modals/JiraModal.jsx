@@ -48,17 +48,19 @@ const JiraModal = () => {
       <Button
         display="flex"
         flexDirection="column"
+        alignItems="center"
         aria-label="open modal"
         onClick={onOpen}
         isDisabled={!user?.accountId}
         fontSize="xs"
-        p={2}
+        p={3}
         gap={1}
         colorScheme="blue"
         boxShadow="xl"
+        whiteSpace="wrap"
       >
         <CalendarIcon />
-        <Text>Export Jira</Text>
+        <Text>Export from Jira logs</Text>
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>

@@ -96,7 +96,7 @@ const SettingModal = () => {
         flexDirection="column"
         onClick={onOpen}
         fontSize="xs"
-        p={2}
+        p={3}
         gap={1}
         colorScheme="orange"
         boxShadow="xl"

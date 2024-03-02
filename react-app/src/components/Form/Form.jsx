@@ -77,15 +77,22 @@ const Form = () => {
       encType="multipart/form-data"
       width="fit-content"
       bg="green.50"
-      w="50%"
       alignSelf="baseline"
+      minH="152px"
+      minWidth="310px"
     >
-      <CardBody as={Stack} p={4}>
+      <CardBody as={Stack} p={4} justifyContent="space-between">
         <Heading size="md" mb={2}>
-          Import from file
+          Import from file:
         </Heading>
 
-        <Flex alignItems="end" flexWrap="wrap" gap={5}>
+        <Flex
+          alignItems="end"
+          flexWrap="wrap"
+          justifyContent="space-between"
+          gap="13px"
+          w="100%"
+        >
           <Flex gap="35px">
             <FormControl
               as={Flex}
@@ -103,7 +110,7 @@ const Form = () => {
               >
                 {errors.file && errors?.file.message}
               </Text>
-              <Text as={FormLabel} fontSize="md">
+              <Text fontSize="md" fontWeight={500} whiteSpace="nowrap" m={0}>
                 Choose a file:
               </Text>
               <FileUpload
@@ -118,7 +125,7 @@ const Form = () => {
             </FormControl>
 
             <FormControl isInvalid={!!errors.type}>
-              <Text as={FormLabel} fontSize="md">
+              <Text fontSize="md" whiteSpace="nowrap" m={0} fontWeight={500}>
                 Choose file type:
               </Text>
               <RadioGroup control={control} onToggle={setIsSent} />
@@ -130,13 +137,13 @@ const Form = () => {
           </Flex>
 
           <Button
-            m="0 0 0 auto"
             flexShrink={0}
-            mt={4}
             colorScheme="teal"
             isLoading={isSubmitting}
             type="submit"
             isDisabled={isSent || !isValid}
+            fontSize="13px"
+            h="30px"
           >
             Import
           </Button>
