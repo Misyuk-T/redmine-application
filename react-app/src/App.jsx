@@ -1,5 +1,11 @@
 import { useEffect } from "react";
-import { ChakraProvider, Container, Flex, Stack } from "@chakra-ui/react";
+import {
+  Button,
+  ChakraProvider,
+  Container,
+  Flex,
+  Stack,
+} from "@chakra-ui/react";
 import { ToastContainer } from "react-toastify";
 
 import useRedmineStore from "./store/redmineStore";
@@ -21,6 +27,8 @@ import Avatar from "./components/Avatar";
 import SettingModal from "./components/Modals/SettingModal";
 
 import theme from "./styles/index";
+import { observeAuth, openLoginPopup } from "./actions/auth";
+import useAuthStore from "./store/userStore";
 
 const App = () => {
   const {
@@ -29,6 +37,7 @@ const App = () => {
     addAssignedIssues,
   } = useJiraStore();
   const { addUser, addProjects, addLatestActivity, user } = useRedmineStore();
+  const { isAuthObserve } = useAuthStore();
 
   const fetchRedmineUser = async () => {
     const user = await redmineLogin();
@@ -41,6 +50,13 @@ const App = () => {
     addJiraUser(user);
     return user;
   };
+
+  useEffect(() => {
+    if (!isAuthObserve) {
+      observeAuth();
+      useAuthStore.setState({ isAuthObserve: true });
+    }
+  }, []);
 
   useEffect(() => {
     fetchJiraUser().then(async (user) => {
@@ -58,6 +74,7 @@ const App = () => {
 
   return (
     <ChakraProvider theme={theme} resetCSS>
+      <Button onClick={() => openLoginPopup()}>click</Button>
       <Container
         as={Flex}
         position="relative"

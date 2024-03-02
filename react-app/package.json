@@ -17,6 +17,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
+    "firebase": "^10.8.1",
     "framer-motion": "^10.12.16",
     "prettier-eslint": "^15.0.1",
     "react": "^18.2.0",
