@@ -158,8 +158,6 @@ const SettingModalItem = ({
           addProjects(await getRedmineProjects(user.id));
           addLatestActivity(await getLatestRedmineWorkLogs(user.id));
         }
-
-        fetchSettings();
         saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
       });
     });

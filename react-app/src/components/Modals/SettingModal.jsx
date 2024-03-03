@@ -62,7 +62,9 @@ const SettingModal = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const settingsArray = settings ? Object.entries(settings) : [];
+  const settingsArray = settings
+    ? Object.entries(settings)
+    : [[null, defaultSetting]];
   const isLastItem = settingsArray.length === 1;
 
   const fetchRedmineUser = async () => {
@@ -79,7 +81,13 @@ const SettingModal = () => {
 
   const handleAddNew = () => {
     updateSettings({ ...defaultSetting, id: uuidv4() });
-    setActiveTab(settingsArray.length);
+    setActiveTab(() => {
+      if (settings) {
+        return settingsArray.length;
+      } else {
+        return 0;
+      }
+    });
   };
 
   const saveOrganizationUrls = (jiraOrganization, redmineOrganization) => {
@@ -153,6 +161,7 @@ const SettingModal = () => {
         gap={1}
         colorScheme="orange"
         boxShadow="xl"
+        isDisabled={!user}
       >
         <UnlockIcon />
         <Text>Settings</Text>
@@ -181,12 +190,12 @@ const SettingModal = () => {
               }}
             >
               <TabList>
-                {settingsArray.length > 0 ? (
+                {settings ? (
                   settingsArray.map((item) => {
                     const isCurrent = currentSettings?.id === item[1]?.id;
 
                     return (
-                      <Tab key={item[1].presetName}>
+                      <Tab key={item[1].id}>
                         <Text whiteSpace="nowrap" fontWeight={600}>
                           {item[1].presetName}
                         </Text>
@@ -195,10 +204,11 @@ const SettingModal = () => {
                     );
                   })
                 ) : (
-                  <Text fontSize="18px" fontWeight={600}>
-                    Please create settings with next btn to start using this
-                    application
-                  </Text>
+                  <Tab>
+                    <Text whiteSpace="nowrap" fontWeight={600}>
+                      Preset Name
+                    </Text>
+                  </Tab>
                 )}
 
                 <Button
