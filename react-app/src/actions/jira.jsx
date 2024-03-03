@@ -17,21 +17,24 @@ import { validateWorkLogsData } from "../helpers/validateWorklogsData";
 
 export const jiraLogin = async () => {
   try {
-    const response = await instance.get("/jira/rest/api/2/myself");
-
-    toast.success(
-      <Stack>
-        <Text fontWeight={600}>Successfully connected to jira</Text>
-      </Stack>,
-      {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "light",
-      }
-    );
+    const response = await instance
+      .get("/jira/rest/api/2/myself")
+      .then((data) => {
+        toast.success(
+          <Stack>
+            <Text fontWeight={600}>Successfully connected to jira</Text>
+          </Stack>,
+          {
+            position: "bottom-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+        return data;
+      });
 
     return response.data;
   } catch (error) {
@@ -102,25 +105,25 @@ export const getJiraWorklogIssues = async (
         workLogs.push(...workLogsForIssue);
       });
 
-      await Promise.all(workLogPromises);
+      await Promise.all(workLogPromises).then(() => {
+        toast.success(
+          <Stack>
+            <Text fontWeight={600}>
+              Jira worklogs were successfully fetched. Got ({parsedData.length})
+              items
+            </Text>
+          </Stack>,
+          {
+            position: "bottom-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+      });
       const parsedData = parseDataFromJira(workLogs);
-
-      toast.success(
-        <Stack>
-          <Text fontWeight={600}>
-            Jira worklogs were successfully fetched. Got ({parsedData.length})
-            items
-          </Text>
-        </Stack>,
-        {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        }
-      );
 
       return groupByField(parsedData, "date");
     }
@@ -216,21 +219,23 @@ export const createJiraWorklogs = async (worklogs) => {
     }
 
     // Execute all API calls concurrently using Promise.all
-    await Promise.all(requests);
-
-    toast.success(
-      <Stack>
-        <Text fontWeight={600}>Worklogs were successfully tracked to jira</Text>
-      </Stack>,
-      {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "light",
-      }
-    );
+    await Promise.all(requests).then(() => {
+      toast.success(
+        <Stack>
+          <Text fontWeight={600}>
+            Worklogs were successfully tracked to jira
+          </Text>
+        </Stack>,
+        {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+    });
   } catch (error) {
     toast.error(
       <Stack>

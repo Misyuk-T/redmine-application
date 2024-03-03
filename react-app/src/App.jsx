@@ -5,13 +5,6 @@ import { ToastContainer } from "react-toastify";
 import useRedmineStore from "./store/redmineStore";
 import useJiraStore from "./store/jiraStore";
 
-import { getAssignedIssues, jiraLogin } from "./actions/jira";
-import {
-  getLatestRedmineWorkLogs,
-  getRedmineProjects,
-  redmineLogin,
-} from "./actions/redmine";
-
 import Form from "./components/Form/Form";
 import InformationTabs from "./components/Tabs/InformationTabs";
 import BoxOverlay from "./components/BoxOverlay";
@@ -27,25 +20,9 @@ import { observeAuth } from "./actions/auth";
 import useAuthStore from "./store/userStore";
 
 const App = () => {
-  const {
-    addUser: addJiraUser,
-    user: jiraUser,
-    addAssignedIssues,
-  } = useJiraStore();
-  const { addUser, addProjects, addLatestActivity, user } = useRedmineStore();
+  const { user: jiraUser } = useJiraStore();
+  const { user } = useRedmineStore();
   const { isAuthObserve, user: googleUser, isLoading } = useAuthStore();
-
-  const fetchRedmineUser = async () => {
-    const user = await redmineLogin();
-    addUser(user);
-    return user;
-  };
-
-  const fetchJiraUser = async () => {
-    const user = await jiraLogin();
-    addJiraUser(user);
-    return user;
-  };
 
   useEffect(() => {
     if (!isAuthObserve) {
@@ -53,22 +30,6 @@ const App = () => {
       useAuthStore.setState({ isAuthObserve: true });
     }
   }, []);
-
-  useEffect(() => {
-    if (googleUser) {
-      fetchJiraUser().then(async (user) => {
-        if (user) {
-          addAssignedIssues(await getAssignedIssues(user.accountId));
-        }
-      });
-      fetchRedmineUser().then(async (user) => {
-        if (user) {
-          addProjects(await getRedmineProjects(user.id));
-          addLatestActivity(await getLatestRedmineWorkLogs(user.id));
-        }
-      });
-    }
-  }, [googleUser]);
 
   return (
     <ChakraProvider theme={theme} resetCSS>

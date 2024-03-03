@@ -6,25 +6,11 @@ const db = getDatabase();
 
 export const sendCurrentSettings = (ownerId, data) => {
   const userSettingsRef = ref(db, `users/${ownerId}`);
-  return update(userSettingsRef, { currentSettings: data.id })
-    .then(() => {
-      toast.success(
-        <Stack>
-          <Text fontWeight={600}>Settings were set as current</Text>
-        </Stack>,
-        {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        }
-      );
-    })
-    .catch((error) => {
+  return update(userSettingsRef, { currentSettings: data.id }).catch(
+    (error) => {
       console.error("Error setting current settings:", error);
-    });
+    }
+  );
 };
 
 export const getCurrentSettings = (ownerId) => {
@@ -61,7 +47,9 @@ export const sendSettings = (ownerId, data) => {
     .then(() => {
       toast.success(
         <Stack>
-          <Text fontWeight={600}>Settings were successfully saved</Text>
+          <Text fontWeight={600}>
+            Settings were successfully saved and set as current
+          </Text>
         </Stack>,
         {
           position: "bottom-center",

@@ -146,6 +146,7 @@ const SettingModalItem = ({
   };
 
   const handleUseSetting = async (formData) => {
+    addCurrentSettings(formData);
     await sendCurrentSettings(user.ownerId, formData).then(() => {
       fetchJiraUser().then(async (user) => {
         if (user) {
@@ -159,7 +160,6 @@ const SettingModalItem = ({
         }
 
         fetchSettings();
-        addCurrentSettings(formData);
         saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
       });
     });

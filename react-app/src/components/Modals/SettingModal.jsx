@@ -26,6 +26,12 @@ import { getOrganizationUrls } from "../../helpers/getOrganizationUrl";
 import SettingModalItem from "./SettingModalItem";
 import useAuthStore from "../../store/userStore";
 import { v4 as uuidv4 } from "uuid";
+import {
+  getLatestRedmineWorkLogs,
+  getRedmineProjects,
+  redmineLogin,
+} from "../../actions/redmine";
+import { getAssignedIssues, jiraLogin } from "../../actions/jira";
 
 const defaultSetting = {
   presetName: "unnamed",
@@ -45,14 +51,31 @@ const SettingModal = () => {
     currentSettings,
   } = useSettingsStore();
   const { user } = useAuthStore();
-  const { addOrganizationURL: setJiraUrl } = useJiraStore();
-  const { addOrganizationURL } = useRedmineStore();
+  const {
+    addOrganizationURL: setJiraUrl,
+    addUser: addJiraUser,
+    addAssignedIssues,
+  } = useJiraStore();
+  const { addOrganizationURL, addUser, addLatestActivity, addProjects } =
+    useRedmineStore();
 
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const settingsArray = settings ? Object.entries(settings) : [];
   const isLastItem = settingsArray.length === 1;
+
+  const fetchRedmineUser = async () => {
+    const user = await redmineLogin();
+    addUser(user);
+    return user;
+  };
+
+  const fetchJiraUser = async () => {
+    const user = await jiraLogin();
+    addJiraUser(user);
+    return user;
+  };
 
   const handleAddNew = () => {
     updateSettings({ ...defaultSetting, id: uuidv4() });
@@ -85,17 +108,37 @@ const SettingModal = () => {
     });
   };
 
-  const handleSetFirst = () => {
-    setActiveTab((prevState) => prevState - 1);
+  const handleChangeTab = () => {
+    setActiveTab((prevState) => {
+      if (prevState !== 0) {
+        return prevState - 1;
+      } else {
+        return 0;
+      }
+    });
   };
 
   useEffect(() => {
     if (user) {
-      fetchSettings().then((data) => {
-        if (!data || Object.entries(data).length === 0) {
-          handleAddNew();
-        }
-      });
+      fetchSettings()
+        .then((data) => {
+          if (!data || Object.entries(data).length === 0) {
+            handleAddNew();
+          }
+        })
+        .then(() => {
+          fetchJiraUser().then(async (user) => {
+            if (user) {
+              addAssignedIssues(await getAssignedIssues(user.accountId));
+            }
+          });
+          fetchRedmineUser().then(async (user) => {
+            if (user) {
+              addProjects(await getRedmineProjects(user.id));
+              addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+            }
+          });
+        });
     }
   }, [user]);
 
@@ -176,7 +219,7 @@ const SettingModal = () => {
                     <SettingModalItem
                       data={item[1]}
                       isLastItem={isLastItem}
-                      onDelete={handleSetFirst}
+                      onDelete={handleChangeTab}
                       key={item[1].id}
                       fetchSettings={fetchSettings}
                       saveOrganizationUrls={saveOrganizationUrls}

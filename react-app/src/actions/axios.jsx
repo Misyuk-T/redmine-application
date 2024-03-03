@@ -1,16 +1,37 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Stack, Text } from "@chakra-ui/react";
+import useSettingsStore from "../store/settingsStore";
 
 export const instance = axios.create({
-  baseURL: "https://redmine-logger-app.onrender.com",
+  baseURL: import.meta.env.VITE_BASE_URL,
+});
+
+instance.interceptors.request.use(async (config) => {
+  const settings = useSettingsStore.getState().currentSettings;
+  if (config.url.includes("jira")) {
+    config.params = {
+      ...config.params,
+      jiraApiKey: settings.jiraApiKey,
+      jiraEmail: settings.jiraEmail,
+      jiraUrl: settings.jiraUrl,
+    };
+  } else if (config.url.includes("redmine")) {
+    config.params = {
+      ...config.params,
+      redmineApiKey: settings.redmineApiKey,
+      redmineUrl: settings.redmineUrl,
+    };
+  }
+
+  return config;
 });
 
 instance.interceptors.response.use(null, (error) => {
   const errorText = error.response.data;
   const statusRequest = error.response.status;
 
-  if (errorText) {
+  if (error.response.status === 500) {
     toast.error(
       <Stack>
         <Text fontWeight={600}>Status: {statusRequest}</Text>

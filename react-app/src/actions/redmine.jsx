@@ -8,21 +8,24 @@ import { validateWorkLogsData } from "../helpers/validateWorklogsData";
 
 export const redmineLogin = async () => {
   try {
-    const response = await instance.get(`/redmine/users/current.json`);
-
-    toast.success(
-      <Stack>
-        <Text fontWeight={600}>Successfully connected to redmine</Text>
-      </Stack>,
-      {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "light",
-      }
-    );
+    const response = await instance
+      .get(`/redmine/users/current.json`)
+      .then((data) => {
+        toast.success(
+          <Stack>
+            <Text fontWeight={600}>Successfully connected to redmine</Text>
+          </Stack>,
+          {
+            position: "bottom-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+        return data;
+      });
 
     return response.data.user;
   } catch (error) {
@@ -100,23 +103,23 @@ export const trackTimeToRedmine = async (data) => {
       return instance.post(`/redmine/time_entries.json`, entry);
     });
 
-    await Promise.all(requests);
-
-    toast.success(
-      <Stack>
-        <Text fontWeight={600}>
-          Worklogs were successfully tracked to redmine
-        </Text>
-      </Stack>,
-      {
-        position: "bottom-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "light",
-      }
-    );
+    await Promise.all(requests).then(() => {
+      toast.success(
+        <Stack>
+          <Text fontWeight={600}>
+            Worklogs were successfully tracked to redmine
+          </Text>
+        </Stack>,
+        {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+    });
   } catch (error) {
     toast.error(
       <Stack>
