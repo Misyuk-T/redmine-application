@@ -5,7 +5,7 @@ import {
   signInWithRedirect,
   signOut,
 } from "firebase/auth";
-import { get, getDatabase, push, ref } from "firebase/database";
+import { get, getDatabase, push, ref, set } from "firebase/database";
 
 import { initializeApp } from "firebase/app";
 import useAuthStore from "../store/userStore";
@@ -39,8 +39,8 @@ export const loginUser = async (googleUserData) => {
       name: displayName,
       email: email,
       photo: photoURL,
-      ownerId: uid,
-      schedules: [],
+      uid: uid,
+      currentSettings: "",
     };
     const db = getDatabase();
     const usersRef = ref(db, "users");
@@ -50,16 +50,17 @@ export const loginUser = async (googleUserData) => {
     if (userQuery.exists()) {
       userQuery.forEach((childSnapshot) => {
         const user = childSnapshot.val();
-        if (user.ownerId === uid) {
+        if (user.uid === uid) {
           existingUserData = user;
         }
       });
     }
 
     if (!existingUserData) {
-      await push(usersRef, userData);
-      existingUserData = { ...userData, id: usersRef.key };
-      console.log("User saved to database:");
+      const newUserRef = push(usersRef);
+      const newUserId = newUserRef.key;
+      existingUserData = { ...userData, ownerId: newUserId };
+      await set(newUserRef, existingUserData);
     }
 
     useAuthStore.setState({ user: existingUserData });

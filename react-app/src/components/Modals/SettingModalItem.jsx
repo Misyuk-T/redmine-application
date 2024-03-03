@@ -32,6 +32,7 @@ import SettingModalFieldItem from "./SettingModalFieldItem";
 
 import RedmineApi from "../../assets/RedmineAPI.png";
 import JiraUserName from "../../assets/JiraUserName.png";
+import useAuthStore from "../../store/userStore";
 
 const fieldItems = [
   {
@@ -59,7 +60,7 @@ const fieldItems = [
   {
     name: "JIRA URL",
     id: "jiraUrl",
-    leftAddon: "https://"
+    leftAddon: "https://",
   },
   {
     name: "Redmine API Key",
@@ -107,10 +108,12 @@ const SettingModalItem = ({
   isLastItem,
   saveOrganizationUrls,
   fetchSettings,
+  isCurrent,
 }) => {
+  const { user } = useAuthStore();
   const { addProjects, addLatestActivity, addUser } = useRedmineStore();
   const { addUser: addJiraUser, addAssignedIssues } = useJiraStore();
-  const { deleteSetting, settings, updateSettings, addCurrentSettings } =
+  const { deleteSetting, updateSettings, addCurrentSettings } =
     useSettingsStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -125,9 +128,9 @@ const SettingModalItem = ({
   });
 
   const handleDelete = async () => {
-    await deleteSettings(data.id);
-    onDelete();
     deleteSetting(data.id);
+    await deleteSettings(user.ownerId, data.id);
+    onDelete();
   };
 
   const fetchRedmineUser = async () => {
@@ -143,7 +146,7 @@ const SettingModalItem = ({
   };
 
   const handleUseSetting = async (formData) => {
-    await sendCurrentSettings(formData).then(() => {
+    await sendCurrentSettings(user.ownerId, formData).then(() => {
       fetchJiraUser().then(async (user) => {
         if (user) {
           addAssignedIssues(await getAssignedIssues(user.accountId));
@@ -163,14 +166,10 @@ const SettingModalItem = ({
   };
 
   const handleSaveSettings = async (formData) => {
-    const updatedSettings = {
-      ...settings,
-      [data.id]: formData,
-    };
+    const settingData = { ...formData, id: data.id };
     setIsLoading(true);
-    updateSettings({ ...formData, id: data.id });
-
-    await sendSettings(updatedSettings);
+    await sendSettings(user.ownerId, settingData);
+    updateSettings(settingData);
   };
 
   const handleSaveAndUse = async () => {
@@ -220,7 +219,7 @@ const SettingModalItem = ({
           colorScheme="red"
           onClick={handleDelete}
           variant="outline"
-          isDisabled={isLastItem}
+          isDisabled={isLastItem || isCurrent}
         >
           Delete
         </Button>

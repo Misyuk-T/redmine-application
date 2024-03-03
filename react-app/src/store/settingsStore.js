@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { v4 as uuidv4 } from "uuid";
 
 const useSettingsStore = create((set) => ({
   settings: null,
@@ -8,14 +7,16 @@ const useSettingsStore = create((set) => ({
   resetSettings: () => set({ settings: null }),
   updateSettings: (settingData) => {
     set((state) => {
-      const existingId = settingData.id;
+      const existingSettings = state.settings?.[settingData?.id];
       let settings = { ...state.settings };
 
-      if (existingId) {
-        settings[existingId] = { ...settings[existingId], ...settingData };
+      if (existingSettings) {
+        settings[settingData.id] = {
+          ...settings[settingData.id],
+          ...settingData,
+        };
       } else {
-        const id = uuidv4();
-        settings = { ...state.settings, [id]: { ...settingData, id } };
+        settings = { ...state.settings, [settingData.id]: settingData };
       }
 
       return { settings };

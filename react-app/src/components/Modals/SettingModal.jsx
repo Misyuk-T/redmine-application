@@ -24,14 +24,16 @@ import { getCurrentSettings, getSettings } from "../../actions/settings";
 import { getOrganizationUrls } from "../../helpers/getOrganizationUrl";
 
 import SettingModalItem from "./SettingModalItem";
+import useAuthStore from "../../store/userStore";
+import { v4 as uuidv4 } from "uuid";
 
 const defaultSetting = {
   presetName: "unnamed",
-  redmineUrl: "default",
-  jiraUrl: "default",
-  redmineApiKey: "default",
-  jiraApiKey: "default",
-  jiraEmail: "default",
+  redmineUrl: "",
+  jiraUrl: "",
+  redmineApiKey: "",
+  jiraApiKey: "",
+  jiraEmail: "",
 };
 
 const SettingModal = () => {
@@ -42,6 +44,7 @@ const SettingModal = () => {
     addCurrentSettings,
     currentSettings,
   } = useSettingsStore();
+  const { user } = useAuthStore();
   const { addOrganizationURL: setJiraUrl } = useJiraStore();
   const { addOrganizationURL } = useRedmineStore();
 
@@ -52,7 +55,8 @@ const SettingModal = () => {
   const isLastItem = settingsArray.length === 1;
 
   const handleAddNew = () => {
-    updateSettings(defaultSetting);
+    updateSettings({ ...defaultSetting, id: uuidv4() });
+    setActiveTab(settingsArray.length);
   };
 
   const saveOrganizationUrls = (jiraOrganization, redmineOrganization) => {
@@ -66,28 +70,34 @@ const SettingModal = () => {
   };
 
   const fetchSettings = async () => {
-    await getCurrentSettings().then((data) => {
+    await getCurrentSettings(user.ownerId).then((data) => {
       addCurrentSettings(data);
-      saveOrganizationUrls(data.jiraUrl, data.redmineUrl);
+      saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
     });
 
-    return await getSettings().then((data) => {
-      addSettings(data);
-      return data;
+    return await getSettings(user.ownerId).then((data) => {
+      const settingsObject = data.reduce((acc, item) => {
+        acc[item.id] = item;
+        return acc;
+      }, {});
+      addSettings(settingsObject);
+      return settingsObject;
     });
   };
 
   const handleSetFirst = () => {
-    setActiveTab(0);
+    setActiveTab((prevState) => prevState - 1);
   };
 
   useEffect(() => {
-    fetchSettings().then((data) => {
-      if (!data || Object.entries(data).length === 0) {
-        handleAddNew();
-      }
-    });
-  }, []);
+    if (user) {
+      fetchSettings().then((data) => {
+        if (!data || Object.entries(data).length === 0) {
+          handleAddNew();
+        }
+      });
+    }
+  }, [user]);
 
   return (
     <>
@@ -160,6 +170,8 @@ const SettingModal = () => {
 
               <TabPanels>
                 {settingsArray.map((item) => {
+                  const isCurrent = currentSettings?.id === item[1]?.id;
+
                   return (
                     <SettingModalItem
                       data={item[1]}
@@ -168,6 +180,7 @@ const SettingModal = () => {
                       key={item[1].id}
                       fetchSettings={fetchSettings}
                       saveOrganizationUrls={saveOrganizationUrls}
+                      isCurrent={isCurrent}
                     />
                   );
                 })}

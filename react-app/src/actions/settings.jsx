@@ -1,14 +1,16 @@
-import { instance } from "./axios";
+import { getDatabase, ref, set, update, remove, get } from "firebase/database";
 import { toast } from "react-toastify";
 import { Stack, Text } from "@chakra-ui/react";
 
-export const sendCurrentSettings = (data) => {
-  return instance
-    .post("/current-settings", data)
+const db = getDatabase();
+
+export const sendCurrentSettings = (ownerId, data) => {
+  const userSettingsRef = ref(db, `users/${ownerId}`);
+  return update(userSettingsRef, { currentSettings: data.id })
     .then(() => {
       toast.success(
         <Stack>
-          <Text fontWeight={600}>Setings were set as current</Text>
+          <Text fontWeight={600}>Settings were set as current</Text>
         </Stack>,
         {
           position: "bottom-center",
@@ -21,22 +23,41 @@ export const sendCurrentSettings = (data) => {
       );
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error setting current settings:", error);
     });
 };
 
-export const getCurrentSettings = (data) => {
-  return instance
-    .get("/current-settings", data)
-    .then((response) => response.data)
+export const getCurrentSettings = (ownerId) => {
+  const userRef = ref(db, `users/${ownerId}`);
+
+  return get(userRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        const currentSettingsId = userData.currentSettings;
+        const settingsRef = ref(
+          db,
+          `users/${ownerId}/settings/${currentSettingsId}`
+        );
+
+        if (settingsRef) {
+          return get(settingsRef).then((settingsSnapshot) => {
+            return settingsSnapshot.val();
+          });
+        } else {
+          return {};
+        }
+      }
+    })
     .catch((error) => {
-      console.error(error);
+      console.error("Error getting user:", error);
+      return null;
     });
 };
 
-export const sendSettings = (data) => {
-  return instance
-    .post("/settings", data)
+export const sendSettings = (ownerId, data) => {
+  const userSettingsRef = ref(db, `users/${ownerId}/settings/${data.id}`);
+  set(userSettingsRef, data)
     .then(() => {
       toast.success(
         <Stack>
@@ -53,13 +74,14 @@ export const sendSettings = (data) => {
       );
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error saving settings:", error);
     });
 };
 
-export const deleteSettings = (id) => {
-  return instance
-    .delete(`/settings/${id}`)
+export const deleteSettings = (ownerId, id) => {
+  const userSettingsRef = ref(db, `users/${ownerId}/settings/${id}`);
+
+  return remove(userSettingsRef)
     .then(() => {
       toast.success(
         <Stack>
@@ -76,17 +98,26 @@ export const deleteSettings = (id) => {
       );
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error deleting settings:", error);
     });
 };
 
-export const getSettings = () => {
-  return instance
-    .get("/settings")
-    .then((response) => {
-      return response.data;
+export const getSettings = (ownerId) => {
+  const userSettingsRef = ref(db, `users/${ownerId}/settings`);
+
+  return get(userSettingsRef)
+    .then((snapshot) => {
+      const settings = [];
+      snapshot.forEach((childSnapshot) => {
+        settings.push({
+          ...childSnapshot.val(),
+        });
+      });
+
+      return settings;
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Error getting settings:", error);
+      return [];
     });
 };
