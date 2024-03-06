@@ -9,14 +9,14 @@ export const instance = axios.create({
 
 instance.interceptors.request.use(async (config) => {
   const settings = useSettingsStore.getState().currentSettings;
-  if (config.url.includes("jira")) {
+  if (config.url.includes("jira") && settings) {
     config.params = {
       ...config.params,
       jiraApiKey: settings.jiraApiKey,
       jiraEmail: settings.jiraEmail,
       jiraUrl: settings.jiraUrl,
     };
-  } else if (config.url.includes("redmine")) {
+  } else if (config.url.includes("redmine") && settings) {
     config.params = {
       ...config.params,
       redmineApiKey: settings.redmineApiKey,
@@ -28,10 +28,10 @@ instance.interceptors.request.use(async (config) => {
 });
 
 instance.interceptors.response.use(null, (error) => {
-  const errorText = error.response.data;
-  const statusRequest = error.response.status;
+  const errorText = error?.response?.data;
+  const statusRequest = error?.response?.status;
 
-  if (error.response.status === 500) {
+  if (statusRequest === 500) {
     toast.error(
       <Stack>
         <Text fontWeight={600}>Status: {statusRequest}</Text>

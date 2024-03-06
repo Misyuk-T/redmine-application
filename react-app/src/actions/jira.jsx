@@ -105,25 +105,25 @@ export const getJiraWorklogIssues = async (
         workLogs.push(...workLogsForIssue);
       });
 
-      await Promise.all(workLogPromises).then(() => {
-        toast.success(
-          <Stack>
-            <Text fontWeight={600}>
-              Jira worklogs were successfully fetched. Got ({parsedData.length})
-              items
-            </Text>
-          </Stack>,
-          {
-            position: "bottom-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            progress: undefined,
-            theme: "light",
-          }
-        );
-      });
+      await Promise.all(workLogPromises);
       const parsedData = parseDataFromJira(workLogs);
+
+      toast.success(
+        <Stack>
+          <Text fontWeight={600}>
+            Jira worklogs were successfully fetched. Got ({parsedData.length})
+            items
+          </Text>
+        </Stack>,
+        {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
 
       return groupByField(parsedData, "date");
     }

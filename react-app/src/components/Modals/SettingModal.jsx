@@ -128,13 +128,9 @@ const SettingModal = () => {
 
   useEffect(() => {
     if (user) {
-      fetchSettings()
-        .then((data) => {
-          if (!data || Object.entries(data).length === 0) {
-            handleAddNew();
-          }
-        })
-        .then(() => {
+      fetchSettings().then((data) => {
+        const isDataExist = Object.entries(data).length > 0;
+        if (isDataExist) {
           fetchJiraUser().then(async (user) => {
             if (user) {
               addAssignedIssues(await getAssignedIssues(user.accountId));
@@ -146,7 +142,10 @@ const SettingModal = () => {
               addLatestActivity(await getLatestRedmineWorkLogs(user.id));
             }
           });
-        });
+        } else {
+          handleAddNew();
+        }
+      });
     }
   }, [user]);
 

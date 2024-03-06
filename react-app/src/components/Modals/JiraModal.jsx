@@ -57,7 +57,7 @@ const JiraModal = () => {
         gap={1}
         colorScheme="blue"
         boxShadow="xl"
-        whiteSpace="wrap"
+        whiteSpace="nowrap"
       >
         <CalendarIcon />
         <Text>Export from Jira logs</Text>

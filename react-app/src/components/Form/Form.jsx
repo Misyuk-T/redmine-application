@@ -93,13 +93,15 @@ const Form = () => {
           gap="13px"
           w="100%"
         >
-          <Flex gap="35px">
+          <Flex gap="15px">
             <FormControl
               as={Flex}
               flexDirection="column"
               justifyContent="space-between"
               isInvalid={!!errors.file}
               isRequired
+              width="130px"
+              px={2}
             >
               <Text
                 position="absolute"
