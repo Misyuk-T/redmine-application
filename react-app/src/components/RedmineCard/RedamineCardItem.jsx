@@ -1,6 +1,7 @@
 import { Text, Stack, Flex, Box, LinkOverlay, LinkBox } from "@chakra-ui/react";
 
 import useRedmineStore from "../../store/redmineStore";
+import { round } from "../../helpers/getHours";
 
 const RedmineCardItem = ({ activities, fontSize }) => {
   const { projects } = useRedmineStore();
@@ -40,7 +41,7 @@ const RedmineCardItem = ({ activities, fontSize }) => {
                 </Text>
 
                 <Text as="strong" fontSize={fontSize}>
-                  {activity.hours}h
+                  {round(activity.hours)}h
                 </Text>
               </Flex>
               <Text fontStyle="italic" fontSize={fontSize}>

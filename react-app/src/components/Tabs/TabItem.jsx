@@ -12,7 +12,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import useWorkLogsStore from "../../store/worklogsStore";
 
 import WorkLogItem from "./WorklogItem/WorkLogItem";
-import { getHours } from "../../helpers/getHours";
+import { getHours, round } from "../../helpers/getHours";
 
 const TabItem = forwardRef(({ dayLogs, date }, ref) => {
   const { addWorkLog } = useWorkLogsStore();
@@ -47,11 +47,11 @@ const TabItem = forwardRef(({ dayLogs, date }, ref) => {
           </Text>
           <Text>
             <strong>blb: </strong>
-            {blbHours}h
+            {round(blbHours)}h
           </Text>
           <Text>
             <strong>nblb: </strong>
-            {nblbHours}h
+            {round(nblbHours)}h
           </Text>
         </Flex>
         <SimpleGrid

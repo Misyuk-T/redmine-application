@@ -125,8 +125,8 @@ const TotalInformationTab = forwardRef(({ data }, ref) => {
                     </Text>
                   )}
                 </Stack>
-                <Text {...subLinkStyles}>{nblbHours}</Text>
-                <Text {...subLinkStyles}>{blbHours}</Text>
+                <Text {...subLinkStyles}>{round(nblbHours)}</Text>
+                <Text {...subLinkStyles}>{round(blbHours)}</Text>
                 <Text
                   {...subLinkStyles}
                   fontWeight={600}

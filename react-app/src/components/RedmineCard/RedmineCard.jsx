@@ -7,6 +7,7 @@ import groupByField from "../../helpers/groupByField";
 import { debounce } from "../../helpers/debounce";
 
 import RedmineCardItem from "./RedamineCardItem";
+import { round } from "../../helpers/getHours";
 
 const isDayWeekend = (dateString) => {
   const date = parse(dateString, "yyyy-MM-dd", new Date());
@@ -105,7 +106,7 @@ const RedmineCard = () => {
                   fontSize={fontSize + 2}
                   color={isValidHours ? "green" : "tomato"}
                 >
-                  {totalHours}h
+                  {round(totalHours)}h
                 </Text>
               </Flex>
 
