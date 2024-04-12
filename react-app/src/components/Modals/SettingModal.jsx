@@ -7,6 +7,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Tab,
   TabList,
   TabPanels,
@@ -59,6 +60,7 @@ const SettingModal = () => {
   const { addOrganizationURL, addUser, addLatestActivity, addProjects } =
     useRedmineStore();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -128,24 +130,29 @@ const SettingModal = () => {
 
   useEffect(() => {
     if (user) {
-      fetchSettings().then((data) => {
-        const isDataExist = Object.entries(data).length > 0;
-        if (isDataExist) {
-          fetchJiraUser().then(async (user) => {
-            if (user) {
-              addAssignedIssues(await getAssignedIssues(user.accountId));
-            }
-          });
-          fetchRedmineUser().then(async (user) => {
-            if (user) {
-              addProjects(await getRedmineProjects(user.id));
-              addLatestActivity(await getLatestRedmineWorkLogs(user.id));
-            }
-          });
-        } else {
-          handleAddNew();
-        }
-      });
+      setIsLoading(true);
+      fetchSettings()
+        .then((data) => {
+          const isDataExist = Object.entries(data).length > 0;
+          if (isDataExist) {
+            fetchJiraUser().then(async (user) => {
+              if (user) {
+                addAssignedIssues(await getAssignedIssues(user.accountId));
+              }
+            });
+            fetchRedmineUser().then(async (user) => {
+              if (user) {
+                addProjects(await getRedmineProjects(user.id));
+                addLatestActivity(await getLatestRedmineWorkLogs(user.id));
+              }
+            });
+          } else {
+            handleAddNew();
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, [user]);
 
@@ -160,9 +167,9 @@ const SettingModal = () => {
         gap={1}
         colorScheme="orange"
         boxShadow="xl"
-        isDisabled={!user}
+        isDisabled={!user || isLoading}
       >
-        <UnlockIcon />
+        {isLoading ? <Spinner flexShrink={0} size={"sm"} /> : <UnlockIcon />}
         <Text>Settings</Text>
       </Button>
 
