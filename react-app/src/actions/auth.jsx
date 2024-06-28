@@ -2,7 +2,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
-  signInWithRedirect,
+  signInWithPopup,
   signOut,
 } from "firebase/auth";
 import { get, getDatabase, push, ref, set } from "firebase/database";
@@ -28,7 +28,7 @@ const auth = getAuth();
 export const openLoginPopup = async () => {
   provider.addScope("profile");
   provider.addScope("email");
-  await signInWithRedirect(auth, provider).then();
+  await signInWithPopup(auth, provider).then();
 };
 
 export const loginUser = async (googleUserData) => {
