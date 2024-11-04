@@ -34,22 +34,30 @@ router.post("/submit-form", multer.single("file"), async (req, res) => {
 
 router.all("/redmine/*", async (req, res) => {
   try {
-    const {redmineApiKey,  redmineUrl } = req.query;
+    const { redmineApiKey, redmineUrl, ...queryParams } = req.query;
     const redmineURL = `https://redmine.${redmineUrl}.com`;
     const url = `${redmineURL}${req.originalUrl.replace("/redmine", "")}`;
 
-    const response = await axios({
+    const axiosConfig = {
       method: req.method,
       url,
-      data: req.body,
-      params: {
-        key: redmineApiKey,
+      headers: {
+        'X-Redmine-API-Key': redmineApiKey,
+        'Accept': 'application/json',
       },
-    });
+      params: queryParams
+    };
 
+    // Only include body data if the request method allows it
+    if (['POST', 'PUT', 'PATCH'].includes(req.method.toUpperCase())) {
+      axiosConfig.data = req.body;
+      axiosConfig.headers['Content-Type'] = 'application/json';
+    }
+
+    const response = await axios(axiosConfig);
     res.send(response.data);
   } catch (error) {
-    console.error("Error while connecting to Redmine: ", error);
+    console.error("Error while connecting to Redmine: ", error.message);
     res.status(500).send("Error while connecting to Redmine");
   }
 });
