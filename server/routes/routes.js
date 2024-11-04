@@ -5,6 +5,8 @@ const axios = require("axios");
 const { multer } = require("../middlewares");
 const { parseText, parseXMLS } = require("../scripts");
 
+const serverUserAgentPlaceholder = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)'
+
 const router = express.Router();
 
 router.post("/submit-form", multer.single("file"), async (req, res) => {
@@ -34,30 +36,25 @@ router.post("/submit-form", multer.single("file"), async (req, res) => {
 
 router.all("/redmine/*", async (req, res) => {
   try {
-    const { redmineApiKey, redmineUrl, ...queryParams } = req.query;
+    const {redmineApiKey,  redmineUrl } = req.query;
     const redmineURL = `https://redmine.${redmineUrl}.com`;
     const url = `${redmineURL}${req.originalUrl.replace("/redmine", "")}`;
 
-    const axiosConfig = {
+    const response = await axios({
       method: req.method,
       url,
-      headers: {
-        'X-Redmine-API-Key': redmineApiKey,
-        'Accept': 'application/json',
+      data: req.body,
+      params: {
+        key: redmineApiKey,
       },
-      params: queryParams
-    };
+      headers: {
+        "User-Agent": serverUserAgentPlaceholder
+      },
+    });
 
-    // Only include body data if the request method allows it
-    if (['POST', 'PUT', 'PATCH'].includes(req.method.toUpperCase())) {
-      axiosConfig.data = req.body;
-      axiosConfig.headers['Content-Type'] = 'application/json';
-    }
-
-    const response = await axios(axiosConfig);
     res.send(response.data);
   } catch (error) {
-    console.error("Error while connecting to Redmine: ", error.message);
+    console.error("Error while connecting to Redmine: ", error);
     res.status(500).send("Error while connecting to Redmine");
   }
 });
