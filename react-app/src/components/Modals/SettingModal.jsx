@@ -230,13 +230,12 @@ const SettingModal = () => {
               <TabPanels>
                 {settingsArray.map((item) => {
                   const isCurrent = currentSettings?.id === item[1]?.id;
-
                   return (
                     <SettingModalItem
                       data={item[1]}
                       isLastItem={isLastItem}
                       onDelete={handleChangeTab}
-                      key={item[1].id}
+                      key={item[0]}
                       fetchSettings={fetchSettings}
                       saveOrganizationUrls={saveOrganizationUrls}
                       isCurrent={isCurrent}

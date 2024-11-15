@@ -16,8 +16,7 @@ import {
   InputGroup,
   Text,
 } from "@chakra-ui/react";
-
-import { InfoIcon } from "@chakra-ui/icons";
+import { InfoIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
 
 const SettingModalFieldItem = ({
   register,
@@ -27,11 +26,15 @@ const SettingModalFieldItem = ({
   leftAddon,
   rightAddon,
   errors,
+  remove,
+  isDynamic,
+  append,
+  showAddButton,
 }) => {
   return (
     <Box width="100%">
       <Flex alignItems="center">
-        <FormLabel m={0} htmlFor={id}>
+        <FormLabel m={0} htmlFor={id} color={isDynamic ? "blue" : "black"}>
           {name}
         </FormLabel>
 
@@ -58,7 +61,7 @@ const SettingModalFieldItem = ({
               <PopoverArrow />
               <PopoverCloseButton />
               <PopoverHeader fontWeight={600} fontSize={18}>
-                How to get:{" "}
+                How to get:
               </PopoverHeader>
               <PopoverBody>{children}</PopoverBody>
             </PopoverContent>
@@ -67,14 +70,42 @@ const SettingModalFieldItem = ({
       </Flex>
 
       <InputGroup size="sm">
-        {leftAddon && <InputLeftAddon children={leftAddon} />}
+        {leftAddon && <InputLeftAddon>{leftAddon}</InputLeftAddon>}
         <Input
           type="text"
           id={id}
           {...register(id, { required: true })}
           isInvalid={errors[id]}
         />
-        {rightAddon && <InputRightAddon children={rightAddon} />}
+        {rightAddon && <InputRightAddon>{rightAddon}</InputRightAddon>}
+
+        {isDynamic && (
+          <Flex ml={2}>
+            <IconButton
+              size="xl"
+              colorScheme={"red"}
+              variant={"outline"}
+              w={"32px"}
+              h={"32px"}
+              icon={<DeleteIcon />}
+              onClick={remove}
+              aria-label="Delete URL"
+            />
+            {showAddButton && (
+              <IconButton
+                ml={1}
+                variant={"outline"}
+                colorScheme={"teal"}
+                size="xl"
+                w={"32px"}
+                h={"32px"}
+                icon={<AddIcon />}
+                onClick={append}
+                aria-label="Add URL"
+              />
+            )}
+          </Flex>
+        )}
       </InputGroup>
 
       {errors[id] && (

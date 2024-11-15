@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import {
   Button,
   Flex,
@@ -58,11 +58,6 @@ const fieldItems = [
     rightAddon: ".com",
   },
   {
-    name: "JIRA URL",
-    id: "jiraUrl",
-    leftAddon: "https://",
-  },
-  {
     name: "Redmine API Key",
     id: "redmineApiKey",
     content: (
@@ -78,7 +73,11 @@ const fieldItems = [
     leftAddon: "",
     rightAddon: "",
   },
-
+  {
+    name: "Main Jira URL",
+    id: "jiraUrl",
+    leftAddon: "https://",
+  },
   {
     name: "JIRA API Key",
     id: "jiraApiKey",
@@ -107,7 +106,6 @@ const SettingModalItem = ({
   onDelete,
   isLastItem,
   saveOrganizationUrls,
-  fetchSettings,
   isCurrent,
 }) => {
   const { user } = useAuthStore();
@@ -119,6 +117,7 @@ const SettingModalItem = ({
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     getValues,
@@ -127,11 +126,18 @@ const SettingModalItem = ({
     defaultValues: {},
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "additionalJiraUrls",
+  });
+
   const handleDelete = async () => {
     deleteSetting(data.id);
     await deleteSettings(user.ownerId, data.id);
     onDelete();
   };
+
+  console.log(getValues());
 
   const fetchRedmineUser = async () => {
     const user = await redmineLogin();
@@ -181,24 +187,28 @@ const SettingModalItem = ({
   };
 
   useEffect(() => {
-    const redmineOrganization = data?.redmineUrl || "";
-    const jiraOrganization = data?.jiraUrl || "";
-
     setValue("presetName", data?.presetName || "");
-    setValue("redmineUrl", redmineOrganization);
-    setValue("jiraUrl", jiraOrganization);
+    setValue("redmineUrl", data?.redmineUrl || "");
+    setValue("jiraUrl", data?.jiraUrl || "");
     setValue("redmineApiKey", data?.redmineApiKey || "");
     setValue("jiraApiKey", data?.jiraApiKey || "");
     setValue("jiraEmail", data?.jiraEmail || "");
+
+    if (data?.additionalJiraUrls && data.additionalJiraUrls.length > 0) {
+      data.additionalJiraUrls.forEach((urlObj) => {
+        append({ url: urlObj.url });
+      });
+    } else {
+      append({ url: "" });
+    }
   }, []);
 
   return (
     <TabPanel>
       <SimpleGrid templateColumns="repeat(2, 1fr)" gap={4}>
-        {fieldItems.map(({ id, name, content, leftAddon, rightAddon }) => {
-          return (
+        {fieldItems.map(({ id, name, content, leftAddon, rightAddon }) => (
+          <React.Fragment key={id}>
             <SettingModalFieldItem
-              key={id}
               id={id}
               name={name}
               register={register}
@@ -208,8 +218,27 @@ const SettingModalItem = ({
             >
               {content}
             </SettingModalFieldItem>
-          );
-        })}
+
+            {id === "jiraUrl" && (
+              <>
+                {fields.map((item, index) => (
+                  <SettingModalFieldItem
+                    key={item.id}
+                    id={`additionalJiraUrls.${index}.url`}
+                    name={`Additional Jira URL ${index + 1}`}
+                    register={register}
+                    errors={errors}
+                    remove={() => remove(index)}
+                    isDynamic
+                    showAddButton={index === fields.length - 1}
+                    leftAddon={"https://"}
+                    append={() => append({ url: "" })}
+                  />
+                ))}
+              </>
+            )}
+          </React.Fragment>
+        ))}
       </SimpleGrid>
 
       <Flex as={ModalFooter} gap={5} px={0} pt={10}>
