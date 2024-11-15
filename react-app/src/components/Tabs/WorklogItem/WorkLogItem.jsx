@@ -130,18 +130,20 @@ const WorkLogItem = ({ data }) => {
       borderColor={borderCardColor}
     >
       <CardHeader position="relative" p={0}>
-        {isEdited && (
-          <IconButton
-            colorScheme="red"
-            position="absolute"
-            size="xs"
-            aria-label="delete"
-            right={-5}
-            top={-3}
-            onClick={handleDelete}
-            icon={<Icon as={DeleteIcon} />}
-          />
-        )}
+        <IconButton
+          colorScheme="red"
+          position="absolute"
+          size="xs"
+          aria-label="delete"
+          right={-5}
+          top={-3}
+          opacity={0.3}
+          onClick={handleDelete}
+          icon={<Icon as={DeleteIcon} />}
+          _hover={{
+            opacity: 1,
+          }}
+        />
 
         <Flex alignItems="flex-start" position="relative" minH="50px" mr={2}>
           <DescriptionInput
