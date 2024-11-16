@@ -17,6 +17,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { InfoIcon, DeleteIcon, AddIcon } from "@chakra-ui/icons";
+import { useEffect } from "react";
 
 const SettingModalFieldItem = ({
   register,
@@ -31,6 +32,10 @@ const SettingModalFieldItem = ({
   append,
   showAddButton,
 }) => {
+  useEffect(() => {
+    document.activeElement.blur();
+  }, []);
+
   return (
     <Box width="100%">
       <Flex alignItems="center">
@@ -74,7 +79,7 @@ const SettingModalFieldItem = ({
         <Input
           type="text"
           id={id}
-          {...register(id, { required: true })}
+          {...register(id, { required: !isDynamic })}
           isInvalid={errors[id]}
         />
         {rightAddon && <InputRightAddon>{rightAddon}</InputRightAddon>}

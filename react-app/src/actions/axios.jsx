@@ -14,7 +14,6 @@ instance.interceptors.request.use(async (config) => {
       ...config.params,
       jiraApiKey: settings.jiraApiKey,
       jiraEmail: settings.jiraEmail,
-      jiraUrl: settings.jiraUrl,
     };
   } else if (config.url.includes("redmine") && settings) {
     config.params = {

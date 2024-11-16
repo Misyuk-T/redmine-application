@@ -15,34 +15,53 @@ import groupByField from "../helpers/groupByField";
 import { formatDateForJira } from "../helpers/getFormattedDate";
 import { validateWorkLogsData } from "../helpers/validateWorklogsData";
 
-export const jiraLogin = async () => {
+export const jiraLogin = async (jiraUrl) => {
   try {
-    const response = await instance
-      .get("/jira/rest/api/2/myself")
-      .then((data) => {
-        toast.success(
-          <Stack>
-            <Text fontWeight={600}>Successfully connected to jira</Text>
-          </Stack>,
-          {
-            position: "bottom-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            progress: undefined,
-            theme: "light",
-          }
-        );
-        return data;
-      });
+    const response = await instance.get("/jira/rest/api/2/myself", {
+      params: {
+        jiraUrl,
+      },
+    });
+
+    toast.success(
+      <Stack>
+        <Text fontWeight={600}>
+          Successfully connected to JIRA at {jiraUrl}
+        </Text>
+      </Stack>,
+      {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
 
     return response.data;
   } catch (error) {
-    console.error("Login failed:", error);
+    console.error(`Login failed for JIRA at ${jiraUrl}:`, error);
+    toast.error(
+      <Stack>
+        <Text fontWeight={600}>Failed to connect to JIRA at {jiraUrl}</Text>
+        <Text>{error.message}</Text>
+      </Stack>,
+      {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      }
+    );
+    return null;
   }
 };
 
 export const getJiraWorklogIssues = async (
+  jiraUrl,
   startDate,
   endDate,
   userId,
@@ -52,6 +71,7 @@ export const getJiraWorklogIssues = async (
   try {
     const response = await instance.get("/jira/rest/api/2/search", {
       params: {
+        jiraUrl,
         jql: `worklogAuthor = '${userId}' AND worklogDate >= '${startDate}' AND worklogDate <= '${endDate}'`,
         maxResults: 100,
         startAt: offset,
@@ -148,6 +168,7 @@ export const getJiraWorklogIssues = async (
 };
 
 export const getAssignedIssues = async (
+  jiraUrl,
   userId,
   offset = 0,
   prevIssues = []
@@ -158,6 +179,7 @@ export const getAssignedIssues = async (
 
     const response = await instance.get("/jira/rest/api/2/search", {
       params: {
+        jiraUrl,
         jql: `assignee = '${userId}' OR assignee WAS '${userId}' DURING ("${format(
           startDate,
           "yyyy-MM-dd"
@@ -172,26 +194,27 @@ export const getAssignedIssues = async (
     const updatedIssues = [...prevIssues, ...issues];
 
     if (issues.length === 100) {
-      return getAssignedIssues(userId, offset + 100, updatedIssues);
+      return getAssignedIssues(userId, jiraUrl, offset + 100, updatedIssues);
     } else {
-      return updatedIssues.map((issue) => {
-        return {
-          id: issue.id,
-          key: issue.key,
-          summary: issue.fields.summary,
-          issueType: issue.fields.issuetype.name,
-          parent: issue.fields.parent ? issue.fields.parent.key : null,
-          project: issue.fields.project.name,
-          status: issue.fields.status.name,
-        };
-      });
+      return updatedIssues.map((issue) => ({
+        id: issue.id,
+        key: issue.key,
+        summary: issue.fields.summary,
+        issueType: issue.fields.issuetype.name,
+        parent: issue.fields.parent ? issue.fields.parent.key : null,
+        project: issue.fields.project.name,
+        status: issue.fields.status.name,
+      }));
     }
   } catch (error) {
-    console.error("Error while fetching assigned issues:", error);
+    console.error(
+      `Error while fetching assigned issues from JIRA at ${jiraUrl}:`,
+      error
+    );
   }
 };
 
-export const createJiraWorklogs = async (worklogs) => {
+export const createJiraWorklogs = async (jiraUrl, worklogs) => {
   try {
     validateWorkLogsData(worklogs, true);
     const requests = [];
@@ -212,7 +235,8 @@ export const createJiraWorklogs = async (worklogs) => {
         //  Make an API call to create the worklog and store the promise
         const request = instance.post(
           `/jira/rest/api/2/issue/${task}/worklog`,
-          data
+          data,
+          { params: jiraUrl }
         );
         requests.push(request);
       }

@@ -55,7 +55,9 @@ const SettingModal = () => {
   const {
     addOrganizationURL: setJiraUrl,
     addUser: addJiraUser,
+    resetAdditionalAssignedIssues,
     addAssignedIssues,
+    addAdditionalAssignedIssues,
   } = useJiraStore();
   const { addOrganizationURL, addUser, addLatestActivity, addProjects } =
     useRedmineStore();
@@ -64,7 +66,8 @@ const SettingModal = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const settingsArray = settings
+  const isSettingsExist = settings && Object.entries(settings)?.length > 0;
+  const settingsArray = isSettingsExist
     ? Object.entries(settings)
     : [[null, defaultSetting]];
   const isLastItem = settingsArray.length === 1;
@@ -75,10 +78,15 @@ const SettingModal = () => {
     return user;
   };
 
-  const fetchJiraUser = async () => {
-    const user = await jiraLogin();
+  const fetchJiraUser = async (jiraUrl) => {
+    const user = await jiraLogin(jiraUrl);
     addJiraUser(user);
     return user;
+  };
+
+  const fetchAdditionalJiraUser = async (jiraUrl) => {
+    // Do not call addJiraUser here to avoid overwriting the main user it just for checking jira url
+    return await jiraLogin(jiraUrl);
   };
 
   const handleAddNew = () => {
@@ -103,12 +111,13 @@ const SettingModal = () => {
   };
 
   const fetchSettings = async () => {
-    await getCurrentSettings(user.ownerId).then((data) => {
+    const currentData = await getCurrentSettings(user.ownerId).then((data) => {
       addCurrentSettings(data);
       saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
+      return data;
     });
 
-    return await getSettings(user.ownerId).then((data) => {
+    const settingsData = await getSettings(user.ownerId).then((data) => {
       const settingsObject = data.reduce((acc, item) => {
         acc[item.id] = item;
         return acc;
@@ -116,6 +125,7 @@ const SettingModal = () => {
       addSettings(settingsObject);
       return settingsObject;
     });
+    return { currentData, settingsData };
   };
 
   const handleChangeTab = () => {
@@ -132,14 +142,41 @@ const SettingModal = () => {
     if (user) {
       setIsLoading(true);
       fetchSettings()
-        .then((data) => {
-          const isDataExist = Object.entries(data).length > 0;
+        .then(({ currentData, settingsData }) => {
+          const isDataExist = Object.entries(settingsData).length > 0;
           if (isDataExist) {
-            fetchJiraUser().then(async (user) => {
-              if (user) {
-                addAssignedIssues(await getAssignedIssues(user.accountId));
+            const currentJiraUrl = currentData?.jiraUrl;
+            if (currentJiraUrl) {
+              fetchJiraUser(currentJiraUrl).then(async (user) => {
+                if (user) {
+                  const assignedIssues = await getAssignedIssues(
+                    currentJiraUrl,
+                    user.accountId
+                  );
+                  addAssignedIssues(assignedIssues);
+                }
+              });
+            }
+
+            resetAdditionalAssignedIssues();
+            const additionalJiraUrls = currentData?.additionalJiraUrls;
+            if (additionalJiraUrls && additionalJiraUrls.length > 0) {
+              for (const jiraUrlObj of additionalJiraUrls) {
+                const jiraUrl = jiraUrlObj.url;
+                if (jiraUrl.length > 0) {
+                  fetchAdditionalJiraUser(jiraUrl).then(async (user) => {
+                    if (user) {
+                      const assignedIssues = await getAssignedIssues(
+                        jiraUrl,
+                        user.accountId
+                      );
+                      addAdditionalAssignedIssues(jiraUrl, assignedIssues);
+                    }
+                  });
+                }
               }
-            });
+            }
+
             fetchRedmineUser().then(async (user) => {
               if (user) {
                 addProjects(await getRedmineProjects(user.id));
@@ -236,7 +273,6 @@ const SettingModal = () => {
                       isLastItem={isLastItem}
                       onDelete={handleChangeTab}
                       key={item[0]}
-                      fetchSettings={fetchSettings}
                       saveOrganizationUrls={saveOrganizationUrls}
                       isCurrent={isCurrent}
                     />

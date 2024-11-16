@@ -110,7 +110,12 @@ const SettingModalItem = ({
 }) => {
   const { user } = useAuthStore();
   const { addProjects, addLatestActivity, addUser } = useRedmineStore();
-  const { addUser: addJiraUser, addAssignedIssues } = useJiraStore();
+  const {
+    addUser: addJiraUser,
+    addAssignedIssues,
+    addAdditionalAssignedIssues,
+    resetAdditionalAssignedIssues,
+  } = useJiraStore();
   const { deleteSetting, updateSettings, addCurrentSettings } =
     useSettingsStore();
 
@@ -137,35 +142,58 @@ const SettingModalItem = ({
     onDelete();
   };
 
-  console.log(getValues());
-
   const fetchRedmineUser = async () => {
     const user = await redmineLogin();
     addUser(user);
     return user;
   };
 
-  const fetchJiraUser = async () => {
-    const user = await jiraLogin();
-    addJiraUser(user);
+  const fetchJiraUser = async (jiraUrl) => {
+    const user = await jiraLogin(jiraUrl);
+    if (jiraUrl === data.jiraUrl) {
+      addJiraUser(user);
+    }
     return user;
   };
 
   const handleUseSetting = async (formData) => {
     addCurrentSettings(formData);
-    await sendCurrentSettings(user.ownerId, formData).then(() => {
-      fetchJiraUser().then(async (user) => {
-        if (user) {
-          addAssignedIssues(await getAssignedIssues(user.accountId));
+    await sendCurrentSettings(user.ownerId, formData).then(async () => {
+      const jiraUser = await fetchJiraUser(formData.jiraUrl);
+      if (jiraUser) {
+        const assignedIssues = await getAssignedIssues(
+          formData.jiraUrl,
+          jiraUser.accountId
+        );
+        addAssignedIssues(assignedIssues);
+      }
+
+      resetAdditionalAssignedIssues();
+      if (
+        formData.additionalJiraUrls &&
+        formData.additionalJiraUrls.length > 0
+      ) {
+        for (const jiraUrlObj of formData.additionalJiraUrls) {
+          const jiraUrl = jiraUrlObj.url;
+          if (jiraUrl.length > 0) {
+            const user = await jiraLogin(jiraUrl);
+            if (user) {
+              const assignedIssues = await getAssignedIssues(
+                jiraUrl,
+                user.accountId
+              );
+              addAdditionalAssignedIssues(jiraUrl, assignedIssues);
+            }
+          }
         }
-      });
-      fetchRedmineUser().then(async (user) => {
-        if (user) {
-          addProjects(await getRedmineProjects(user.id));
-          addLatestActivity(await getLatestRedmineWorkLogs(user.id));
-        }
-        saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
-      });
+      }
+
+      const redmineUser = await fetchRedmineUser();
+      if (redmineUser) {
+        addProjects(await getRedmineProjects(redmineUser.id));
+        addLatestActivity(await getLatestRedmineWorkLogs(redmineUser.id));
+      }
+      saveOrganizationUrls(data?.jiraUrl, data?.redmineUrl);
     });
   };
 
