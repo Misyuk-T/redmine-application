@@ -120,7 +120,30 @@ const JiraModal = () => {
           <ModalCloseButton />
 
           <Stack as={ModalBody} alignItems="center" mb={3}>
-            <DayPicker mode="range" selected={range} onSelect={setRange} />
+            <DayPicker
+              mode="range"
+              selected={range}
+              onSelect={setRange}
+              styles={{
+                head_cell: {
+                  width: "50px",
+                  height: "50px",
+                  margin: 0,
+                  button: { margin: 0 },
+                },
+                table: {
+                  maxWidth: "none",
+                  margin: 0,
+                },
+                day: {
+                  display: "block",
+                  width: "50px",
+                  maxWidth: "50px",
+                  height: "50px",
+                  margin: "0",
+                },
+              }}
+            />
             <Stack spacing={3} w={"100%"} maxW={"280px"}>
               <Checkbox isChecked isDisabled size={"lg"}>
                 <Link
