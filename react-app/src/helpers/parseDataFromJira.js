@@ -9,6 +9,7 @@ export const parseDataFromJira = (data) => {
       /(\+\d{2})(\d{2})$/,
       "$1:$2"
     );
+
     return {
       description: log.comment || "",
       hours: parseTimeSpent(log.timeSpent),
@@ -17,6 +18,7 @@ export const parseDataFromJira = (data) => {
       project: "",
       blb: "nblb",
       id: uuidv4(),
+      jiraUrl: log.jiraUrl,
     };
   });
 };

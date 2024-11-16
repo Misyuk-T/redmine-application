@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { addDays, format } from "date-fns";
 import { Button, Tab, TabList, TabPanels, Tabs, Box } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
@@ -27,6 +27,7 @@ const InformationTabs = () => {
 
   const { workLogs, addWorkLog, setIsJiraExport } = useWorkLogsStore();
   const [isScrollEnable, setIsScrollEnable] = useState(false);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
 
   const container = parentContainerRef?.current;
   const pinDiv = fixedContainerRef?.current;
@@ -66,6 +67,13 @@ const InformationTabs = () => {
     });
   };
 
+  useEffect(() => {
+    if (sortedArray.length === 0) {
+      setSelectedTabIndex(0);
+      container?.scrollTo({ left: 0 });
+    }
+  }, [sortedArray]);
+
   return (
     <Box h="100%" position="relative">
       <Tabs
@@ -78,10 +86,12 @@ const InformationTabs = () => {
         overflowY="visible"
         ref={parentContainerRef}
         onChange={(index) => {
+          setSelectedTabIndex(index);
           setIsScrollEnable(index !== 0);
           pinDiv.style.transform = `translateX(${container.scrollLeft}px)`;
         }}
         onScroll={handleScroll}
+        index={selectedTabIndex}
       >
         <TabList className={styles.tabsList}>
           <Tab

@@ -50,6 +50,11 @@ const WorkLogItem = ({ data }) => {
     useJiraStore();
   const { updateWorkLog, deleteWorkLog } = useWorkLogsStore();
 
+  const truncatedOrganizationURL = organizationURL.slice(
+    8,
+    organizationURL?.length
+  );
+
   const {
     handleSubmit,
     control,
@@ -57,6 +62,7 @@ const WorkLogItem = ({ data }) => {
     setValue,
     watch,
     register,
+    getValues,
     formState: { errors, isValid },
   } = useForm({
     defaultValues: {
@@ -66,7 +72,7 @@ const WorkLogItem = ({ data }) => {
       hours: data.hours,
       blb: data.blb,
       task: getIssueValue(data.task, assignedIssues),
-      jiraUrl: data.jiraUrl || organizationURL,
+      jiraUrl: data.jiraUrl || truncatedOrganizationURL,
     },
   });
 
@@ -81,14 +87,9 @@ const WorkLogItem = ({ data }) => {
     ? "blue.600"
     : "transparent";
 
-  // Prepare options for Jira instances
-  const trincatedOrganizationURL = organizationURL.slice(
-    8,
-    organizationURL?.length
-  );
   const mainJiraOptionItem = {
-    value: trincatedOrganizationURL,
-    label: trincatedOrganizationURL,
+    value: truncatedOrganizationURL,
+    label: truncatedOrganizationURL,
   };
   const jiraInstanceOptions = [
     mainJiraOptionItem,
@@ -98,12 +99,12 @@ const WorkLogItem = ({ data }) => {
     })),
   ];
 
-  // Get assigned issues based on selected Jira instance
-  const selectedJiraUrl = watch("jiraUrl")?.value || trincatedOrganizationURL;
-  const assignedIssuesForSelectedJira =
-    selectedJiraUrl === trincatedOrganizationURL
-      ? assignedIssues
-      : additionalAssignedIssues[selectedJiraUrl] || [];
+  const selectedJiraUrl = getValues().jiraUrl.value || truncatedOrganizationURL;
+  const isMainOrganizationSelected =
+    selectedJiraUrl === truncatedOrganizationURL;
+  const assignedIssuesForSelectedJira = isMainOrganizationSelected
+    ? assignedIssues
+    : additionalAssignedIssues[selectedJiraUrl] || [];
 
   const handleCancel = () => {
     reset({
@@ -143,10 +144,6 @@ const WorkLogItem = ({ data }) => {
   useEffect(() => {
     setValue("blb", data.blb);
   }, [data.blb]);
-
-  useEffect(() => {
-    setValue("jiraUrl", mainJiraOptionItem);
-  }, []);
 
   return (
     <Card
@@ -250,9 +247,11 @@ const WorkLogItem = ({ data }) => {
               onChange={(jiraUrl) => {
                 setValue("jiraUrl", jiraUrl);
                 setIsEdited(true);
-                setValue("task", null);
+                setValue("task", "");
               }}
-              value={watch("jiraUrl")}
+              value={jiraInstanceOptions.find(
+                (item) => item.value === selectedJiraUrl
+              )}
             />
           </Flex>
 
@@ -263,16 +262,13 @@ const WorkLogItem = ({ data }) => {
             <Box width="300px">
               <IssuesSelect
                 jiraUrl={selectedJiraUrl}
-                value={
-                  watch("task") ||
-                  getIssueValue(data.task, assignedIssuesForSelectedJira)
-                }
+                value={watch("task")}
                 control={control}
                 onChange={(task) => {
                   setValue("task", task);
                   setIsEdited(true);
                 }}
-                assignedIssues={assignedIssuesForSelectedJira} // Pass assigned issues
+                assignedIssues={assignedIssuesForSelectedJira}
               />
             </Box>
           </Flex>

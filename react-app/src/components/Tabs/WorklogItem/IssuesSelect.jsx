@@ -74,7 +74,7 @@ const IssuesSelect = ({ onChange, control, value, assignedIssues }) => {
               menuPlacement="auto"
               onChange={onChange}
               options={formattedIssueData}
-              placeholder="Select issue ..."
+              placeholder="undefined"
               menuPortalTarget={document.body}
               styles={{
                 control: (baseStyles, state) => ({
@@ -95,6 +95,11 @@ const IssuesSelect = ({ onChange, control, value, assignedIssues }) => {
                 singleValue: (provided) => ({
                   ...provided,
                   color: isUndefinedValue ? "orange" : "black",
+                  fontSize: "14px",
+                }),
+                placeholder: (provided) => ({
+                  ...provided,
+                  color: "orange",
                   fontSize: "14px",
                 }),
               }}

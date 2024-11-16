@@ -64,7 +64,7 @@ export const getJiraWorklogIssues = async (
   jiraUrl,
   startDate,
   endDate,
-  userId,
+  jiraEmail,
   offset = 0,
   prevIssues = []
 ) => {
@@ -72,7 +72,7 @@ export const getJiraWorklogIssues = async (
     const response = await instance.get("/jira/rest/api/2/search", {
       params: {
         jiraUrl,
-        jql: `worklogAuthor = '${userId}' AND worklogDate >= '${startDate}' AND worklogDate <= '${endDate}'`,
+        jql: `worklogAuthor = '${jiraEmail}' AND worklogDate >= '${startDate}' AND worklogDate <= '${endDate}'`,
         maxResults: 100,
         startAt: offset,
         fields: "summary,worklog,issuetype,parent,project,status,assignee",
@@ -84,9 +84,10 @@ export const getJiraWorklogIssues = async (
 
     if (issues.length === 100) {
       return getJiraWorklogIssues(
+        jiraUrl,
         startDate,
         endDate,
-        userId,
+        jiraEmail,
         offset + 100,
         updatedIssues
       );
@@ -106,7 +107,8 @@ export const getJiraWorklogIssues = async (
           `/jira/rest/api/2/issue/${issueKey}/worklog`,
           {
             params: {
-              authorAccountId: userId,
+              jiraUrl,
+              authorAccountId: jiraEmail,
               startedAfter: startTimestamp,
               startedBefore: endTimestamp,
             },
@@ -116,10 +118,11 @@ export const getJiraWorklogIssues = async (
         const workLogData = workLogResponse.data;
 
         const workLogsForIssue = workLogData.worklogs
-          .filter((worklog) => worklog.author.accountId === userId)
+          .filter((worklog) => worklog.author.emailAddress === jiraEmail)
           .map((worklog) => ({
             ...worklog,
             task: issueKey,
+            jiraUrl,
           }));
 
         workLogs.push(...workLogsForIssue);
@@ -132,7 +135,7 @@ export const getJiraWorklogIssues = async (
         <Stack>
           <Text fontWeight={600}>
             Jira worklogs were successfully fetched. Got ({parsedData.length})
-            items
+            items for {jiraUrl}
           </Text>
         </Stack>,
         {
