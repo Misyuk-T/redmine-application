@@ -1,5 +1,21 @@
 import { useState } from "react";
-import { Box, Button, Flex, FormLabel, Switch, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  FormLabel,
+  IconButton,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Stack,
+  Switch,
+  Text,
+} from "@chakra-ui/react";
 import Select from "react-select";
 
 import useWorkLogsStore from "../../../store/worklogsStore";
@@ -16,6 +32,50 @@ import { getTotalHoursFromObject } from "../../../helpers/getHours";
 import { filterWorklogsByTask } from "../../../helpers/filterWorklogsForJira";
 
 import ModalDialog from "../../ModalDialog";
+import { QuestionIcon } from "@chakra-ui/icons";
+
+const renderPopover = () => {
+  return (
+    <Popover boundary="scrollParent" size={"xl"}>
+      <PopoverTrigger>
+        <Box>
+          <IconButton
+            opacity={0.5}
+            p={0}
+            h="15px"
+            w="10px"
+            background="transparent"
+            aria-label="helper popup"
+            icon={<QuestionIcon />}
+            transition="all .3s"
+            _hover={{
+              background: "transparent",
+              svg: {
+                opacity: "0.5",
+              },
+            }}
+          />
+        </Box>
+      </PopoverTrigger>
+      <PopoverContent p={5}>
+        <PopoverArrow />
+        <PopoverCloseButton />
+        <PopoverBody>
+          <Text>
+            This button will attempt to match Jira issues to worklog
+            descriptions, but only if the description starts with a valid task
+            ID (e.g.,
+            <strong>CE-580:</strong> some text here).
+          </Text>
+          <Text mt={2}>
+            If a match is found, the worklog will be linked to the corresponding
+            Jira issue. If no match exists, nothing will happen.
+          </Text>
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 const RedmineForm = () => {
   const {
@@ -81,44 +141,60 @@ const RedmineForm = () => {
   };
 
   return (
-    <Flex mt={5} gap={30} justifyContent="space-between">
-      <Flex gap={8} alignItems="center">
-        <Flex alignItems="center" gap={3}>
-          <FormLabel htmlFor="blb" m={0} fontWeight={400}>
-            Billability toggle:
-          </FormLabel>
-          <Switch
-            id="blb"
-            isDisabled={!user?.id || !isWorkLogsExist}
-            onChange={handleBlbStatus}
-            size="lg"
-          />
-        </Flex>
+    <Stack mt={5} gap={"10px"} justifyContent="space-between">
+      <Stack p={"10px"} bg={"gray.50"} borderRadius={"5px"} gap={"20px"}>
+        <Text textTransform={"uppercase"} fontSize={13} fontWeight={500}>
+          Bulk edit block: functionality here will edit all existing cards
+        </Text>
 
-        <Flex gap={3}>
-          <Box w="300px">
-            <Select
-              value={selectedItem}
-              onChange={setSelectedItem}
-              options={formattedProjectData}
-              placeholder="Select project ..."
-              menuPlacement="auto"
+        <Flex gap={8} alignItems="center">
+          <Flex alignItems="center" gap={3}>
+            <FormLabel htmlFor="blb" m={0} fontWeight={400}>
+              Billability toggle:
+            </FormLabel>
+            <Switch
+              id="blb"
+              isDisabled={!user?.id || !isWorkLogsExist}
+              onChange={handleBlbStatus}
+              size="lg"
             />
-          </Box>
-          <Button
-            onClick={handleAddProject}
-            variant="outline"
-            colorScheme="orange"
-            isDisabled={!selectedItem || !isWorkLogsExist}
-          >
-            Set project to all tasks
-          </Button>
+          </Flex>
+
+          <Flex gap={3}>
+            <Box w="300px">
+              <Select
+                value={selectedItem}
+                onChange={setSelectedItem}
+                options={formattedProjectData}
+                placeholder="Select redmine project ..."
+                menuPlacement="auto"
+              />
+            </Box>
+            <Button
+              onClick={handleAddProject}
+              variant="outline"
+              colorScheme="orange"
+              isDisabled={!selectedItem || !isWorkLogsExist}
+            >
+              Set project
+            </Button>
+          </Flex>
+
+          <Flex alignItems={"center"}>
+            <Button
+              color={"blue"}
+              variant={"outline"}
+              onClick={handleBulkUpdate}
+              isDisabled={!isWorkLogsExist}
+            >
+              Match jira task
+            </Button>
+            {renderPopover()}
+          </Flex>
         </Flex>
-      </Flex>
+      </Stack>
 
-      <Button onClick={handleBulkUpdate}>find issues</Button>
-
-      <Flex gap={5}>
+      <Flex gap={5} mt={"20px"} justifyContent={"end"}>
         <ModalDialog
           headerTitle="Submitting to Jira"
           trigger={
@@ -161,7 +237,7 @@ const RedmineForm = () => {
           </Text>
         </ModalDialog>
       </Flex>
-    </Flex>
+    </Stack>
   );
 };
 
