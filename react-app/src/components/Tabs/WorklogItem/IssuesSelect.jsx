@@ -14,14 +14,11 @@ import {
 } from "@chakra-ui/react";
 import { QuestionIcon } from "@chakra-ui/icons";
 
-import useJiraStore from "../../../store/jiraStore";
 import { transformToIssueData } from "../../../helpers/transformToSelectData";
 
-const IssuesSelect = ({ onChange, control, value }) => {
-  const { assignedIssues } = useJiraStore();
-
+const IssuesSelect = ({ onChange, control, value, assignedIssues }) => {
   const formattedIssueData = transformToIssueData(assignedIssues);
-  const isUndefinedValue = !value.value;
+  const isUndefinedValue = !value?.value;
 
   const renderPopover = () => {
     return (
@@ -55,10 +52,9 @@ const IssuesSelect = ({ onChange, control, value }) => {
           <PopoverBody>
             Worklogs with{" "}
             <Text as="span" color="orange">
-              {" "}
               undefined
             </Text>{" "}
-            task <strong>will not be logged in jira</strong>
+            task <strong>will not be logged in Jira</strong>
           </PopoverBody>
         </PopoverContent>
       </Popover>
@@ -67,7 +63,7 @@ const IssuesSelect = ({ onChange, control, value }) => {
 
   return (
     <Controller
-      name="issue"
+      name="task"
       control={control}
       render={({ field }) => {
         return (

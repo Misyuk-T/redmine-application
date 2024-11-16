@@ -29,25 +29,25 @@ import HoursInput from "./HoursInput";
 import StatusSwitch from "./StatusSwitch";
 import ProjectsSelect from "./ProjectsSelect";
 import IssuesSelect from "./IssuesSelect";
+import JiraInstanceSelect from "./JiraInstanceSelect";
 
 const handleNumbersValidate = (value) => {
   if (isNaN(value) || value > 8 || value <= 0) {
-    return "Uncorrected hours field";
+    return "Incorrect hours field";
   }
-
   return true;
 };
 
 const handleTextValidate = (value) => {
   if (value.length < 1) {
-    return "Description  can`t be empty";
+    return "Description can't be empty";
   }
-
   return true;
 };
 
 const WorkLogItem = ({ data }) => {
-  const { assignedIssues } = useJiraStore();
+  const { assignedIssues, additionalAssignedIssues, organizationURL } =
+    useJiraStore();
   const { updateWorkLog, deleteWorkLog } = useWorkLogsStore();
 
   const {
@@ -66,8 +66,10 @@ const WorkLogItem = ({ data }) => {
       hours: data.hours,
       blb: data.blb,
       task: getIssueValue(data.task, assignedIssues),
+      jiraUrl: data.jiraUrl || organizationURL,
     },
   });
+
   const [isEdited, setIsEdited] = useState(false);
   const originDate = useRef(data.date);
 
@@ -79,6 +81,30 @@ const WorkLogItem = ({ data }) => {
     ? "blue.600"
     : "transparent";
 
+  // Prepare options for Jira instances
+  const trincatedOrganizationURL = organizationURL.slice(
+    8,
+    organizationURL?.length
+  );
+  const mainJiraOptionItem = {
+    value: trincatedOrganizationURL,
+    label: trincatedOrganizationURL,
+  };
+  const jiraInstanceOptions = [
+    mainJiraOptionItem,
+    ...Object.keys(additionalAssignedIssues).map((url) => ({
+      value: url,
+      label: url,
+    })),
+  ];
+
+  // Get assigned issues based on selected Jira instance
+  const selectedJiraUrl = watch("jiraUrl")?.value || trincatedOrganizationURL;
+  const assignedIssuesForSelectedJira =
+    selectedJiraUrl === trincatedOrganizationURL
+      ? assignedIssues
+      : additionalAssignedIssues[selectedJiraUrl] || [];
+
   const handleCancel = () => {
     reset({
       description: data.description,
@@ -87,12 +113,13 @@ const WorkLogItem = ({ data }) => {
       hours: data.hours,
       blb: data.blb,
       task: getIssueValue(data.task, assignedIssues),
+      jiraUrl: data.jiraUrl || organizationURL,
     });
     setIsEdited(false);
   };
 
   const handleSave = (formData) => {
-    const { description, date, hours, blb, project, task } = formData;
+    const { description, date, hours, blb, project, task, jiraUrl } = formData;
 
     const updatedData = {
       ...data,
@@ -102,6 +129,7 @@ const WorkLogItem = ({ data }) => {
       blb: blb || data.blb,
       project: project?.value || data.project,
       task: task?.value || "",
+      jiraUrl: jiraUrl?.value || data.jiraUrl || organizationURL,
     };
 
     updateWorkLog(originDate.current, data.id, updatedData);
@@ -115,6 +143,10 @@ const WorkLogItem = ({ data }) => {
   useEffect(() => {
     setValue("blb", data.blb);
   }, [data.blb]);
+
+  useEffect(() => {
+    setValue("jiraUrl", mainJiraOptionItem);
+  }, []);
 
   return (
     <Card
@@ -192,9 +224,9 @@ const WorkLogItem = ({ data }) => {
         </Flex>
 
         <Stack gap={0}>
-          <Flex alignItems="center" w="100%">
+          <Flex alignItems="center" w="100%" gap={"5px"}>
             <Text m={0}>
-              <strong>Project:</strong>{" "}
+              <strong>Redmine:</strong>{" "}
             </Text>
             <Box width="300px">
               <ProjectsSelect
@@ -208,20 +240,39 @@ const WorkLogItem = ({ data }) => {
             </Box>
           </Flex>
 
-          <Flex alignItems="center" w="100%">
-            <Text m={0}>
-              <strong>Task:</strong>{" "}
+          <Flex alignItems="center" w="100%" gap={"5px"}>
+            <Text m={0} whiteSpace={"nowrap"}>
+              <strong>Jira URL:</strong>{" "}
+            </Text>
+            <JiraInstanceSelect
+              control={control}
+              options={jiraInstanceOptions}
+              onChange={(jiraUrl) => {
+                setValue("jiraUrl", jiraUrl);
+                setIsEdited(true);
+                setValue("task", null);
+              }}
+              value={watch("jiraUrl")}
+            />
+          </Flex>
+
+          <Flex alignItems="center" w="100%" gap={"5px"}>
+            <Text m={0} whiteSpace={"nowrap"}>
+              <strong>Jira Issue:</strong>{" "}
             </Text>
             <Box width="300px">
               <IssuesSelect
+                jiraUrl={selectedJiraUrl}
                 value={
-                  watch("task") || getIssueValue(data.task, assignedIssues)
+                  watch("task") ||
+                  getIssueValue(data.task, assignedIssuesForSelectedJira)
                 }
                 control={control}
                 onChange={(task) => {
                   setValue("task", task);
                   setIsEdited(true);
                 }}
+                assignedIssues={assignedIssuesForSelectedJira} // Pass assigned issues
               />
             </Box>
           </Flex>
@@ -231,7 +282,6 @@ const WorkLogItem = ({ data }) => {
           <Controller
             name="blb"
             control={control}
-            // defaultValue={data.blb}
             render={({ field }) => {
               return (
                 <StatusSwitch

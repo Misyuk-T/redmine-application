@@ -130,6 +130,7 @@ const InformationTabs = () => {
         <TabPanels
           h="calc(100% - 45px)"
           position="relative"
+          w={"100%"}
           ref={fixedContainerRef}
         >
           <TotalInformationTab

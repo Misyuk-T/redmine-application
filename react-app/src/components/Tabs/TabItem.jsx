@@ -56,9 +56,9 @@ const TabItem = forwardRef(({ dayLogs, date }, ref) => {
         </Flex>
         <SimpleGrid
           minChildWidth={300}
-          spacing={5}
+          gap={"20px"}
           mt={15}
-          templateColumns="repeat(auto-fit, minmax(300px, 365px))"
+          templateColumns="repeat(auto-fit, minmax(300px, 358px))"
         >
           {dayLogs.map((item, index) => {
             return <WorkLogItem data={item} key={item.description + index} />;

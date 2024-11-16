@@ -214,7 +214,7 @@ export const getAssignedIssues = async (
   }
 };
 
-export const createJiraWorklogs = async (jiraUrl, worklogs) => {
+export const createJiraWorklogs = async (worklogs) => {
   try {
     validateWorkLogsData(worklogs, true);
     const requests = [];
@@ -232,11 +232,11 @@ export const createJiraWorklogs = async (jiraUrl, worklogs) => {
           issueKey: task,
         };
 
-        //  Make an API call to create the worklog and store the promise
+        // Make an API call to create the worklog and store the promise
         const request = instance.post(
           `/jira/rest/api/2/issue/${task}/worklog`,
           data,
-          { params: jiraUrl }
+          { params: { jiraUrl: worklog.jiraUrl } }
         );
         requests.push(request);
       }
@@ -247,7 +247,7 @@ export const createJiraWorklogs = async (jiraUrl, worklogs) => {
       toast.success(
         <Stack>
           <Text fontWeight={600}>
-            Worklogs were successfully tracked to jira
+            Worklogs were successfully tracked to Jira
           </Text>
         </Stack>,
         {
@@ -263,7 +263,7 @@ export const createJiraWorklogs = async (jiraUrl, worklogs) => {
   } catch (error) {
     toast.error(
       <Stack>
-        <Text fontWeight={600}>Can`t submit due to error: {error.message}</Text>
+        <Text fontWeight={600}>Can't submit due to error: {error.message}</Text>
       </Stack>,
       {
         position: "bottom-center",
