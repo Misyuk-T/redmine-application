@@ -207,6 +207,7 @@ export const getAssignedIssues = async (
         parent: issue.fields.parent ? issue.fields.parent.key : null,
         project: issue.fields.project.name,
         status: issue.fields.status.name,
+        jiraUrl: jiraUrl,
       }));
     }
   } catch (error) {

@@ -18,11 +18,19 @@ import { filterWorklogsByTask } from "../../../helpers/filterWorklogsForJira";
 import ModalDialog from "../../ModalDialog";
 
 const RedmineForm = () => {
-  const { addBulkWorkLogProject, workLogs, addWorkLogs, isJiraExport } =
-    useWorkLogsStore();
+  const {
+    addBulkWorkLogProject,
+    workLogs,
+    addWorkLogs,
+    bulkUpdateWorkLogsWithJira,
+  } = useWorkLogsStore();
   const { projects, resetLatestActivity, addLatestActivity, user } =
     useRedmineStore();
-  const { user: jiraUser } = useJiraStore();
+  const {
+    user: jiraUser,
+    assignedIssues,
+    additionalAssignedIssues,
+  } = useJiraStore();
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [isBlbLog, setIsBlbLog] = useState(false);
@@ -33,6 +41,14 @@ const RedmineForm = () => {
   const isWorkLogsExist = worklogsArray?.length > 0;
   const isWorklogHaveProject =
     isWorkLogsExist && worklogsArray[0][1][0].project;
+
+  const handleBulkUpdate = () => {
+    const allJiraIssues = [
+      ...assignedIssues, // Main Jira issues
+      ...Object.values(additionalAssignedIssues).flat(),
+    ];
+    bulkUpdateWorkLogsWithJira(allJiraIssues);
+  };
 
   const handleAddProject = () => {
     addBulkWorkLogProject(selectedItem.value);
@@ -99,6 +115,8 @@ const RedmineForm = () => {
           </Button>
         </Flex>
       </Flex>
+
+      <Button onClick={handleBulkUpdate}>find issues</Button>
 
       <Flex gap={5}>
         <ModalDialog

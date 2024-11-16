@@ -13,9 +13,11 @@ import useWorkLogsStore from "../../store/worklogsStore";
 
 import WorkLogItem from "./WorklogItem/WorkLogItem";
 import { getHours, round } from "../../helpers/getHours";
+import useJiraStore from "../../store/jiraStore";
 
 const TabItem = forwardRef(({ dayLogs, date }, ref) => {
   const { addWorkLog } = useWorkLogsStore();
+  const { organizationURL } = useJiraStore();
   const { totalHours, blbHours, nblbHours } = getHours(dayLogs);
   const totalTextColor =
     totalHours === 8
@@ -23,6 +25,11 @@ const TabItem = forwardRef(({ dayLogs, date }, ref) => {
       : totalHours > 8 || totalHours < 0
       ? "red"
       : "orange";
+
+  const truncatedOrganizationURL = organizationURL?.slice(
+    8,
+    organizationURL?.length
+  );
 
   const handleCreate = () => {
     addWorkLog(date, {
@@ -32,6 +39,7 @@ const TabItem = forwardRef(({ dayLogs, date }, ref) => {
       blb: "nblb",
       project: "",
       task: "",
+      jiraUrl: truncatedOrganizationURL,
     });
   };
 

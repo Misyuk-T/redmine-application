@@ -32,7 +32,7 @@ const JiraModal = () => {
   const [selectedUrls, setSelectedUrls] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const truncatedOrganizationUrl = organizationURL.slice(
+  const truncatedOrganizationUrl = organizationURL?.slice(
     8,
     organizationURL.length
   );

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
 
 const useWorkLogsStore = create((set, get) => ({
   workLogs: null,
@@ -62,6 +63,52 @@ const useWorkLogsStore = create((set, get) => ({
       return { workLogs: oldState };
     });
   },
+  bulkUpdateWorkLogsWithJira: (jiraIssues) => {
+    set((state) => {
+      const oldState = { ...state.workLogs };
+
+      let updatedWorkLogs = [];
+
+      Object.keys(oldState).forEach((date) => {
+        oldState[date] = oldState[date].map((workLog) => {
+          const taskIdentifier = workLog.description.split(":")[0].trim();
+          const matchingIssue = jiraIssues.find(
+            (issue) => issue.key === taskIdentifier
+          );
+
+          if (matchingIssue) {
+            updatedWorkLogs.push(workLog.description);
+            return {
+              ...workLog,
+              jiraUrl: matchingIssue.jiraUrl,
+              task: matchingIssue.key,
+            };
+          }
+          return workLog;
+        });
+      });
+
+      // Show the toast notification with updated tasks
+      if (updatedWorkLogs.length > 0) {
+        toast.success(
+          `Updated worklogs for ${updatedWorkLogs.length} items: `,
+          {
+            position: "bottom-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+      }
+
+      return { workLogs: oldState };
+    });
+  },
+
   setIsJiraExport: (isJiraExport) => set({ isJiraExport }),
 }));
 

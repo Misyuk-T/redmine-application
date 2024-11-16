@@ -50,7 +50,7 @@ const WorkLogItem = ({ data }) => {
     useJiraStore();
   const { updateWorkLog, deleteWorkLog } = useWorkLogsStore();
 
-  const truncatedOrganizationURL = organizationURL.slice(
+  const truncatedOrganizationURL = organizationURL?.slice(
     8,
     organizationURL?.length
   );
@@ -99,7 +99,7 @@ const WorkLogItem = ({ data }) => {
     })),
   ];
 
-  const selectedJiraUrl = getValues().jiraUrl.value || truncatedOrganizationURL;
+  const selectedJiraUrl = getValues().jiraUrl?.value || watch("jiraUrl");
   const isMainOrganizationSelected =
     selectedJiraUrl === truncatedOrganizationURL;
   const assignedIssuesForSelectedJira = isMainOrganizationSelected
@@ -114,7 +114,7 @@ const WorkLogItem = ({ data }) => {
       hours: data.hours,
       blb: data.blb,
       task: getIssueValue(data.task, assignedIssues),
-      jiraUrl: data.jiraUrl || organizationURL,
+      jiraUrl: data.jiraUrl || truncatedOrganizationURL,
     });
     setIsEdited(false);
   };
@@ -144,6 +144,14 @@ const WorkLogItem = ({ data }) => {
   useEffect(() => {
     setValue("blb", data.blb);
   }, [data.blb]);
+
+  useEffect(() => {
+    setValue("jiraUrl", data.jiraUrl);
+  }, [data.jiraUrl]);
+
+  useEffect(() => {
+    setValue("task", getIssueValue(data.task, assignedIssues));
+  }, [data.task]);
 
   return (
     <Card

@@ -12,6 +12,7 @@ import BoxOverlay from "../BoxOverlay";
 import Footer from "../Footer";
 
 import styles from "./InformationTabs.module.scss";
+import useJiraStore from "../../store/jiraStore";
 
 const getSortedByDate = (data) =>
   data.sort((a, b) => {
@@ -26,6 +27,7 @@ const InformationTabs = () => {
   const fixedActionsPanelRef = useRef(null);
 
   const { workLogs, addWorkLog, setIsJiraExport } = useWorkLogsStore();
+  const { organizationURL } = useJiraStore();
   const [isScrollEnable, setIsScrollEnable] = useState(false);
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
 
@@ -44,6 +46,11 @@ const InformationTabs = () => {
     : new Date();
   const formattedLastDate = format(lastDate, "dd-MM-yyyy");
 
+  const truncatedOrganizationURL = organizationURL?.slice(
+    8,
+    organizationURL?.length
+  );
+
   const handleAddWorkLog = () => {
     addWorkLog(formattedLastDate, {
       date: formattedLastDate,
@@ -52,6 +59,7 @@ const InformationTabs = () => {
       blb: "nblb",
       project: "",
       task: "",
+      jiraUrl: truncatedOrganizationURL,
     });
     setIsJiraExport(false);
   };
