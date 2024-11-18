@@ -37,6 +37,9 @@ const JiraModal = () => {
     organizationURL.length
   );
 
+  console.log(organizationURL, "organizationURL");
+  console.log(selectedUrls, "selectedUrls");
+
   const handleCheckboxChange = (url) => {
     setSelectedUrls((prevSelectedUrls) => ({
       ...prevSelectedUrls,
@@ -80,7 +83,10 @@ const JiraModal = () => {
 
   useEffect(() => {
     if (truncatedOrganizationUrl) {
-      handleCheckboxChange(truncatedOrganizationUrl);
+      setSelectedUrls((prevSelectedUrls) => ({
+        ...prevSelectedUrls,
+        [truncatedOrganizationUrl]: true,
+      }));
     }
   }, [organizationURL]);
 

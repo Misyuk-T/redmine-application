@@ -160,6 +160,7 @@ const SettingModal = () => {
 
             resetAdditionalAssignedIssues();
             const additionalJiraUrls = currentData?.additionalJiraUrls;
+            console.log(additionalJiraUrls, "additionalJiraUrls");
             if (additionalJiraUrls && additionalJiraUrls.length > 0) {
               for (const jiraUrlObj of additionalJiraUrls) {
                 const jiraUrl = jiraUrlObj.url;

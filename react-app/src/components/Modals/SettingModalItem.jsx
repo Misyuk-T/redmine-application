@@ -211,6 +211,8 @@ const SettingModalItem = ({
     await handleUseSetting(currentData);
     await handleSaveSettings(currentData);
 
+    console.log(currentData, "handleSaveSettings");
+
     setIsLoading(false);
   };
 
