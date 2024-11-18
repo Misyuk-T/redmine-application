@@ -173,11 +173,11 @@ const SettingModalItem = ({
         formData.additionalJiraUrls &&
         formData.additionalJiraUrls.length > 0
       ) {
-        for (const jiraUrlObj of formData.additionalJiraUrls) {
+        formData.additionalJiraUrls?.map(async (jiraUrlObj) => {
           const jiraUrl = jiraUrlObj.url;
           if (jiraUrl.length > 0) {
             const user = await jiraLogin(jiraUrl);
-            if (user) {
+            if (user.accountId) {
               const assignedIssues = await getAssignedIssues(
                 jiraUrl,
                 user.accountId
@@ -185,7 +185,7 @@ const SettingModalItem = ({
               addAdditionalAssignedIssues(jiraUrl, assignedIssues);
             }
           }
-        }
+        });
       }
 
       const redmineUser = await fetchRedmineUser();
@@ -210,8 +210,6 @@ const SettingModalItem = ({
 
     await handleUseSetting(currentData);
     await handleSaveSettings(currentData);
-
-    console.log(currentData, "handleSaveSettings");
 
     setIsLoading(false);
   };

@@ -37,9 +37,6 @@ const JiraModal = () => {
     organizationURL.length
   );
 
-  console.log(organizationURL, "organizationURL");
-  console.log(selectedUrls, "selectedUrls");
-
   const handleCheckboxChange = (url) => {
     setSelectedUrls((prevSelectedUrls) => ({
       ...prevSelectedUrls,
@@ -57,7 +54,7 @@ const JiraModal = () => {
     let allWorkLogs = {};
 
     for (const [url, isSelected] of Object.entries(selectedUrls)) {
-      if (isSelected) {
+      if (isSelected && user?.emailAddress) {
         const worklogs = await getJiraWorklogIssues(
           url,
           startDate,

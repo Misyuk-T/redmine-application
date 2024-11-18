@@ -197,7 +197,7 @@ export const getAssignedIssues = async (
     const updatedIssues = [...prevIssues, ...issues];
 
     if (issues.length === 100) {
-      return getAssignedIssues(userId, jiraUrl, offset + 100, updatedIssues);
+      return getAssignedIssues(jiraUrl, userId, offset + 100, updatedIssues);
     } else {
       return updatedIssues.map((issue) => ({
         id: issue.id,
